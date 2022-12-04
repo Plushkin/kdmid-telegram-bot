@@ -20,9 +20,9 @@ class MessageSender
 
   def send
     if reply_markup
-      bot.api.send_message(chat_id: chat_id, text: text, reply_markup: reply_markup)
+      bot.api.send_message(chat_id: chat_id, text: text, reply_markup: reply_markup, parse_mode: 'HTML')
     else
-      bot.api.send_message(chat_id: chat_id, text: text)
+      bot.api.send_message(chat_id: chat_id, text: text, parse_mode: 'HTML')
     end
 
     logger.debug "sending '#{text}' to #{username}"

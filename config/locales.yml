@@ -1,3 +1,7 @@
 en:
-  greeting_message: "Hi! Telegram is awesome!"
+  greeting_message: |
+    Hi! Kdmid bot checks queue on sites like *.kdmid.ru for <b>free slots</b>.
+
+    For beginning please send me a link that your receive after registration on the site.
+    Link should looks like: https://istanbul.kdmid.ru/queue/OrderInfo.aspx?id=123&cd=123
   farewell_message: "Bye! I'll miss you :("
