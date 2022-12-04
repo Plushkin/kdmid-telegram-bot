@@ -5,6 +5,7 @@ Bundler.setup :default, :development
 
 require 'telegram/bot'
 require 'aasm'
+require 'bugsnag'
 
 require './lib/message_responder'
 require './lib/app_configurator'

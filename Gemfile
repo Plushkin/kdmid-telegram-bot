@@ -14,3 +14,4 @@ gem 'two_captcha'
 
 gem 'pry'
 gem 'minitest-hooks'
+gem 'bugsnag'
