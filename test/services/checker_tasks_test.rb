@@ -36,6 +36,7 @@ describe Services::CheckerTasks::Create do
     describe 'active task with the same params already exists' do
       before do
         @user.tasks.create!(
+          url: url,
           subdomain: subdomain,
           order_id: order_id,
           code: code
@@ -46,6 +47,30 @@ describe Services::CheckerTasks::Create do
         _(@user.tasks.count).must_equal 1
         @service.call
         _(@user.tasks.count).must_equal 1
+      end
+    end
+
+    describe 'stopped task with the same params already exists' do
+      before do
+        @user.tasks.create!(
+          url: url,
+          subdomain: subdomain,
+          order_id: order_id,
+          code: code,
+          status: :stopped
+        )
+      end
+
+      it 'does not add new task' do
+        _(@user.tasks.count).must_equal 1
+        @service.call
+        _(@user.tasks.count).must_equal 1
+      end
+
+      it 'changes status to created' do
+        _(@user.tasks.last.status).must_equal 'stopped'
+        @service.call
+        _(@user.tasks.reload.last.status).must_equal 'created'
       end
     end
   end

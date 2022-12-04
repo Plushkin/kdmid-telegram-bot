@@ -24,6 +24,7 @@ module Services
       def validate_call
         super
         errors.add(:url, I18n.t('errors.url.invalid')) if url.empty?
+        errors.add(:url, I18n.t('errors.url.invalid')) if url.length > 255
         errors.add(:url, I18n.t('errors.url.not_available')) unless url_available?
       end
 
@@ -50,13 +51,21 @@ module Services
       end
 
       def create_task(subdomain, order_id, code)
-        task = Task.active.where(subdomain: subdomain, order_id: order_id, code: code)
-        if task.exists?
-          $logger.info "[Same task] #{task.inspect}"
+        task = Task.find_by(subdomain: subdomain, order_id: order_id, code: code)
+        unless task
+          user.tasks.create!(url: url, subdomain: subdomain, order_id: order_id, code: code)
           return
         end
 
-        user.tasks.create!(subdomain: subdomain, order_id: order_id, code: code)
+        case
+        when task.created? || task.in_progress?
+          $logger.info "[Active task] #{task.inspect}"
+          return
+        when task.stopped?
+          $logger.info "[Stopped task] #{task.inspect}"
+          task.restart!
+          return
+        end
       end
 
     end

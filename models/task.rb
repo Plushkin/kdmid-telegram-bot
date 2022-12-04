@@ -6,8 +6,9 @@ class Task < ActiveRecord::Base
   validates :subdomain, presence: true
   validates :order_id, presence: true
   validates :code, presence: true
+  validates :url, presence: true, length: { maximum: 255 }
 
-  validates :order_id, uniqueness: { scope: :code }
+  validates :order_id, uniqueness: { scope: [:code, :status] }
 
   scope :active, -> { where(status: [:created, :in_progress]) }
 
@@ -17,13 +18,18 @@ class Task < ActiveRecord::Base
     state :created, initial: true
     state :in_progress, :stopped, :canceled
 
+    event :restart do
+      transitions from: :stopped,
+                  to: :created
+    end
+
     event :start do
       transitions from: :created,
                   to: %i[in_progress stopped]
     end
 
     event :stop do
-      transitions from: :in_progress,
+      transitions from: [:created, :in_progress],
                   to: :stopped
     end
 

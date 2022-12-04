@@ -24,11 +24,62 @@ class QueueChecker
     )
   end
 
-  def notify_user(message)
-    $logger.info message
+  def check_queue
+    $logger.info "===== Current time: #{current_time} ====="
 
+    browser.goto @link
+
+    pass_hcaptcha
+    pass_ddgcaptcha
+
+    browser.button(id: 'ctl00_MainContent_ButtonA').wait_until(timeout: 30, &:exists?)
+
+    pass_captcha_on_form
+
+    browser.button(id: 'ctl00_MainContent_ButtonA').click
+
+    sleep 3
+
+    if browser.alert.exists?
+      browser.alert.ok
+    end
+
+    sleep 1
+
+    pass_hcaptcha
+    pass_ddgcaptcha
+
+    click_make_appointment_button
+
+    save_page
+
+    stop_text_found = browser.p(text: /Извините, но в настоящий момент/).exists? ||
+      browser.p(text: /Свободное время в системе записи отсутствует/).exists?
+
+    unless stop_text_found
+      task.stop!
+      notify_users
+    end
+
+    browser.close
+    $logger.info '=' * 50
+  rescue Exception => e
+    $logger.error e.inspect
+    sleep 3
+    browser.close
+    raise e
+  end
+
+  private
+
+  def notify_users
     Telegram::Bot::Client.run($config.get_token, logger: $logger) do |bot|
-      MessageSender.new(bot: bot, chat_id: user.chat_id, username: user.username, text: message).send
+      active_tasks_for_subdomain = Taks.active.where(subdomain: task.subdomain).includes(:user)
+      active_tasks_for_subdomain.find_each do |t|
+        message = I18n.t('new_slot_found_message', link: t.url)
+        MessageSender.new(bot: bot, chat_id: t.user.chat_id, username: t.user.username, text: message).send
+        t.stop!
+      end
     end
   end
 
@@ -152,53 +203,5 @@ class QueueChecker
   def save_page
     browser.screenshot.save "./screenshots/#{current_time}.png"
     File.open("./pages/#{current_time}.html", 'w') { |f| f.write browser.html }
-  end
-
-  def check_queue
-    $logger.info "===== Current time: #{current_time} ====="
-
-    notify_user('Start check...')
-
-    browser.goto @link
-
-    pass_hcaptcha
-    pass_ddgcaptcha
-
-    browser.button(id: 'ctl00_MainContent_ButtonA').wait_until(timeout: 30, &:exists?)
-
-    pass_captcha_on_form
-
-    browser.button(id: 'ctl00_MainContent_ButtonA').click
-
-    sleep 3
-
-    if browser.alert.exists?
-      browser.alert.ok
-    end
-
-    sleep 1
-
-    pass_hcaptcha
-    pass_ddgcaptcha
-
-    click_make_appointment_button
-
-    save_page
-
-    stop_text_found = browser.p(text: /Извините, но в настоящий момент/).exists? ||
-      browser.p(text: /Свободное время в системе записи отсутствует/).exists?
-
-    unless stop_text_found
-      task.stop!
-      notify_user('New time for an appointment found!')
-    end
-
-    browser.close
-    $logger.info '=' * 50
-  rescue Exception => e
-    $logger.error e.inspect
-    sleep 3
-    browser.close
-    raise e
   end
 end

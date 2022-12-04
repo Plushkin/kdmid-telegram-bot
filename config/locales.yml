@@ -16,6 +16,8 @@ en:
   dont_understand_message: I don't understand you :(
   farewell_message: Bye! I'll miss you :(
 
+  new_slot_found_message: "New slot found! Your link: %{link}"
+
   activemodel:
     errors:
       record_invalid: "record invalid: %{errors}"
