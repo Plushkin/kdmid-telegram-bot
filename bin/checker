@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+require './lib/boot'
+
+$logger.debug 'Starting checker'
+
+Task.active.order(:created_at).each do |task|
+  $logger.info "[Process task] #{task.inspect}"
+  task.start! if task.created?
+  QueueChecker.new(task).check_queue
+end

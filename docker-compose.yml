@@ -1,0 +1,59 @@
+---
+version: "3.7"
+
+services:
+  hub:
+    image: selenium/hub:4.3.0
+    environment:
+      GRID_BROWSER_TIMEOUT: 10000 # 10 seconds
+      GRID_NEW_SESSION_WAIT_TIMEOUT: 20000
+      GRID_NODE_POLLING: 300
+      GRID_TIMEOUT: 10000
+    ports:
+      - "4444:4444"
+
+  node-firefox:
+    image: selenium/node-firefox:103.0
+    environment: &SELENIUM_NODE_ENV
+      SE_EVENT_BUS_HOST: hub
+      SE_EVENT_BUS_PUBLISH_PORT: 4442
+      SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+      HUB_HOST: hub
+      HUB_PORT: 4444
+    ports:
+      - "5900:5900"
+    volumes:
+      - /dev/shm:/dev/shm
+
+  bot:
+    build:
+      context: .
+    stdin_open: true
+    tty: true
+    restart: always
+    env_file:
+      - ./.env
+    volumes:
+      - .:/app
+    command: bin/bot
+    depends_on:
+      - db
+
+  db:
+    image: postgres:14.5
+    restart: always
+    ports:
+      - '5434:5432'
+    volumes:
+      - database:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: kdmid_queue_checker_bot_development
+
+volumes:
+  bundle_path:
+    driver: local
+  database:
+    driver: local
+  redis:
+    driver: local

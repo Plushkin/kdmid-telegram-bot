@@ -1,0 +1,26 @@
+*.rbc
+*.swp
+capybara-*.html
+/log
+*.log
+/tmp
+.idea/
+.DS_Store
+**.orig
+rerun.txt
+pickle-email-*.html
+
+## Environment normalisation:
+/.bundle
+/vendor/bundle
+
+# Ignore byebug history
+.byebug_history
+
+pages/*.html
+captches/*.png
+screenshots/*.png
+
+# Ignore .env
+/.env*
+!.env.example
