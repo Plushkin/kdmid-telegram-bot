@@ -11,6 +11,7 @@ module CheckerTasks
 
     def call
       subdomain, order_id, code = task_params
+      raise 'Params invalid' if [subdomain, order_id, code].any?(&:nil?)
       create_task(subdomain, order_id, code)
     end
 
@@ -24,9 +25,9 @@ module CheckerTasks
     end
 
     def create_task(subdomain, order_id, code)
-      active_tasks = Task.where(subdomain: subdomain).active
-      if active_tasks.exists?
-        $logger.info "[Active tasks] #{active_tasks.inspect}"
+      task = Task.active.where(subdomain: subdomain, order_id: order_id, code: code)
+      if task.exists?
+        $logger.info "[Same task] #{task.inspect}"
         return
       end
 

@@ -4,7 +4,12 @@ require './lib/boot'
 
 $logger.debug 'Starting checker'
 
-Task.active.order(:created_at).each do |task|
+tasks_by_subdomain = Task.active.group(:subdomain).count
+
+tasks_by_subdomain.each do |subdomain, count|
+  $logger.info "subdomain: #{subdomain} count: #{count}"
+
+  task = Task.active.where(subdomain: subdomain).order(created_at: :desc).first
   $logger.info "[Process task] #{task.inspect}"
   task.start! if task.created?
   QueueChecker.new(task).check_queue

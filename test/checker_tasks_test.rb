@@ -12,6 +12,17 @@ describe CheckerTasks::Create do
   end
 
   describe '#call' do
+    describe 'params invalid' do
+      let(:url) { "http://#{subdomain}.kdmid.ru/queue/OrderInfo.aspx?id=#{order_id}" }
+
+      it 'raises an error' do
+        ex = assert_raises {
+          @service.call
+        }
+        p ex
+      end
+    end
+
     describe 'there is no active task' do
       it 'adds new task with order id and code' do
         _(@user.tasks.count).must_equal 0
@@ -24,12 +35,12 @@ describe CheckerTasks::Create do
       end
     end
 
-    describe 'active task already exists' do
+    describe 'active task with the same params already exists' do
       before do
         @user.tasks.create!(
           subdomain: subdomain,
-          order_id: '123',
-          code: '123'
+          order_id: order_id,
+          code: code
         )
       end
 

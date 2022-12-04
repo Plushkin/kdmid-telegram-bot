@@ -1,7 +1,45 @@
 ---
 version: "3.7"
 
+x-app: &app
+  build:
+    context: .
+  stdin_open: true
+  tty: true
+  env_file:
+    - ./.env
+  tmpfs:
+    - /tmp
+  volumes:
+    - .:/app
+  depends_on:
+    - db
+
 services:
+  bot:
+    <<: *app
+    restart: always
+    command: bin/bot
+
+  checker:
+    <<: *app
+    command: bin/checker
+    depends_on:
+      - db
+      - hub
+      - node-firefox
+
+  db:
+    image: postgres:14.5
+    restart: always
+    ports:
+      - '5434:5432'
+    volumes:
+      - database:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: kdmid_queue_checker_bot_development
+
   hub:
     image: selenium/hub:4.3.0
     environment:
@@ -25,35 +63,8 @@ services:
     volumes:
       - /dev/shm:/dev/shm
 
-  bot:
-    build:
-      context: .
-    stdin_open: true
-    tty: true
-    restart: always
-    env_file:
-      - ./.env
-    volumes:
-      - .:/app
-    command: bin/bot
-    depends_on:
-      - db
-
-  db:
-    image: postgres:14.5
-    restart: always
-    ports:
-      - '5434:5432'
-    volumes:
-      - database:/var/lib/postgresql/data
-    environment:
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: kdmid_queue_checker_bot_development
-
 volumes:
   bundle_path:
     driver: local
   database:
-    driver: local
-  redis:
     driver: local
