@@ -1,8 +1,6 @@
 require './models/user'
 require './models/task'
 require './lib/message_sender'
-require './lib/checker_tasks/create'
-require './lib/queue_checker'
 
 class MessageResponder
   attr_reader :message
@@ -17,21 +15,31 @@ class MessageResponder
   def respond
     create_user
 
-    on /^\/start/ do
-      answer_with_greeting_message
-    end
-
-    on /^\/stop/ do
-      answer_with_farewell_message
-    end
-
-    on CheckerTasks::Create::KDMID_URL_REGEXP do
-      CheckerTasks::Create.new(url: message.text.strip, user: @user).call
-      answer_with_message('Check started!')
+    case message
+    when Telegram::Bot::Types::Message
+      case message.text
+      when '/start'
+        answer_with_greeting_message
+      when '/end'
+        answer_with_farewell_message
+      when Services::CheckerTasks::Create::KDMID_URL_REGEXP
+        handle_kdmid_url_message
+      else
+        answer_with_message(I18n.t('dont_understand_message'))
+      end
     end
   end
 
   private
+
+  def handle_kdmid_url_message
+    result = Services::CheckerTasks::Create.call(url: message.text.strip, user: @user)
+    if result.success?
+      answer_with_message(I18n.t('task_added_message'))
+    else
+      answer_with_message(I18n.t('url_invalid_message')) if result.errors[:url].any?
+    end
+  end
 
   def create_user
     @user = User.find_or_create_by!(uid: message.from.id, username: message.chat.username)

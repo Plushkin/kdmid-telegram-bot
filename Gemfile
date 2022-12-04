@@ -6,6 +6,7 @@ gem 'i18n'
 gem 'pg', '1.4.2'
 gem 'rake'
 gem 'aasm'
+gem 'faraday-follow_redirects'
 
 gem 'selenium-webdriver', '4.3.0'
 gem 'watir'

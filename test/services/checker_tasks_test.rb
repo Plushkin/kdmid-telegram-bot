@@ -1,6 +1,6 @@
-require_relative 'minitest_helper'
+require_relative '../minitest_helper'
 
-describe CheckerTasks::Create do
+describe Services::CheckerTasks::Create do
   let(:subdomain) { 'istanbul' }
   let(:order_id) { '104681' }
   let(:code) { '345AFDEA' }
@@ -8,18 +8,16 @@ describe CheckerTasks::Create do
 
   before do
     @user = User.create!(uid: 123)
-    @service = CheckerTasks::Create.new(url: url, user: @user)
+    @service = Services::CheckerTasks::Create.new(url: url, user: @user)
   end
 
   describe '#call' do
-    describe 'params invalid' do
+    describe 'url is invalid' do
       let(:url) { "http://#{subdomain}.kdmid.ru/queue/OrderInfo.aspx?id=#{order_id}" }
 
-      it 'raises an error' do
-        ex = assert_raises {
-          @service.call
-        }
-        p ex
+      it 'adds an error' do
+        @service.call
+        _(@service.errors[:url]).must_equal [I18n.t('errors.url.invalid')]
       end
     end
 

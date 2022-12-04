@@ -6,10 +6,12 @@ Bundler.setup :default, :development
 require 'telegram/bot'
 require 'aasm'
 require 'bugsnag'
+require 'faraday/follow_redirects'
 
 require './lib/message_responder'
 require './lib/app_configurator'
-require './lib/checker_tasks/create'
+require './lib/services/application_service'
+require './lib/services/checker_tasks/create'
 require './lib/queue_checker'
 
 $config = AppConfigurator.new
