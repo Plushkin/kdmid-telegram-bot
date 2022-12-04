@@ -51,7 +51,13 @@
 - name: Launch docker compose
   become_user: "{{ app_user }}"
   shell:
-    cmd: docker-compose up --build -d hub node-firefox db bot
+    cmd: docker-compose up -d hub node-firefox db bot
+    chdir: "{{ app_path }}"
+
+- name: Launch bot
+  become_user: "{{ app_user }}"
+  shell:
+    cmd: docker-compose up -d --force-recreate --no-deps bot
     chdir: "{{ app_path }}"
 
 - name: Update vnc password
