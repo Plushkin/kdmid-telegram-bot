@@ -1,0 +1,67 @@
+- name: Create directories
+  file:
+    path: "{{ docker_path }}"
+    owner: "{{ app_user }}"
+    group: "{{ app_user_group }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - "{{ docker_path }}"
+    - "{{ app_path }}"
+  tags:
+    - dir
+
+- name: Update git repository
+  become_user: "{{ app_user }}"
+  git:
+    repo: "{{ app_repo_url }}"
+    dest: "{{ app_path }}/src"
+    accept_hostkey: yes
+    force: yes
+    clone: yes
+
+- name: Copy dotenv template
+  template:
+    src: "templates/.env.j2"
+    dest: "{{ app_path }}/.env"
+    owner: "{{ app_user }}"
+    group: "{{ app_user_group }}"
+    mode: "0644"
+
+- name: Copy docker compose template
+  template:
+    src: "templates/docker-compose.yml.j2"
+    dest: "{{ app_path }}/docker-compose.yml"
+    owner: "{{ app_user }}"
+    group: "{{ app_user_group }}"
+    mode: "0644"
+
+- name: Launch docker build
+  become_user: "{{ app_user }}"
+  shell:
+    cmd: docker-compose build
+    chdir: "{{ app_path }}"
+
+- name: Apply db migrations
+  become_user: "{{ app_user }}"
+  shell:
+    cmd: docker-compose run --rm bot rake db:migrate
+    chdir: "{{ app_path }}"
+
+- name: Launch docker compose
+  become_user: "{{ app_user }}"
+  shell:
+    cmd: docker-compose up --build -d hub node-firefox db bot
+    chdir: "{{ app_path }}"
+
+- name: Update vnc password
+  become_user: "{{ app_user }}"
+  shell:
+    cmd: docker-compose exec node-firefox /bin/bash -c "x11vnc -storepasswd {{ vnc_password }} /home/seluser/.vnc/passwd"
+    chdir: "{{ app_path }}"
+
+# - name: Restart firefox
+#   become_user: "{{ app_user }}"
+#   shell:
+#     cmd: docker-compose restart node-firefox
+#     chdir: "{{ app_path }}"

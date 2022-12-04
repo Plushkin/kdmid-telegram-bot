@@ -1,0 +1,75 @@
+---
+version: "3.7"
+
+x-app: &app
+  build:
+    context: ./src
+  stdin_open: true
+  tty: true
+  env_file:
+    - ./.env
+  tmpfs:
+    - /tmp
+  volumes:
+    - ./src:/app
+    - bundle:/gems
+  logging:
+    driver: "json-file"
+    options:
+      max-size: 1000m
+      max-file: "3"
+  depends_on:
+    - db
+
+services:
+  bot:
+    <<: *app
+    restart: always
+    command: bin/bot
+
+  checker:
+    <<: *app
+    command: bin/checker
+    depends_on:
+      - db
+      - hub
+      - node-firefox
+
+  db:
+    image: postgres:14.5
+    restart: always
+    expose:
+      - '5432'
+    volumes:
+      - {{ app_path }}/db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: {{ postgres_password }}
+      POSTGRES_DB: {{ postgres_db}}
+
+  hub:
+    image: selenium/hub:4.3.0
+    environment:
+      GRID_BROWSER_TIMEOUT: 10000 # 10 seconds
+      GRID_NEW_SESSION_WAIT_TIMEOUT: 20000
+      GRID_NODE_POLLING: 300
+      GRID_TIMEOUT: 10000
+    expose:
+      - "4444"
+
+  node-firefox:
+    image: selenium/node-firefox:103.0
+    environment: &SELENIUM_NODE_ENV
+      SE_EVENT_BUS_HOST: hub
+      SE_EVENT_BUS_PUBLISH_PORT: 4442
+      SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+      HUB_HOST: hub
+      HUB_PORT: 4444
+    shm_size: 2gb
+    ports:
+      - "5900"
+
+volumes:
+  bundle:
+    driver: local
+  database:
+    driver: local

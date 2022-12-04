@@ -1,0 +1,21 @@
+docker_path: /opt/docker
+ansible_python_interpreter: /usr/bin/python3
+app_user: apps
+app_user_group: docker
+
+ssh_users:
+  - name: accessd
+    key: https://github.com/accessd.keys
+users_to_remove: []
+
+docker_compose_version: "v2.13.0"
+
+default_locale: 'en_US.UTF-8'
+
+aliases:
+  - "alias dcl='docker-compose logs -f --tail=100'"
+  - "alias dce='docker-compose exec'"
+  - "alias dps='docker ps'"
+  - "alias ll='ls -la'"
+  - "alias gpr='git pull'"
+  - "alias l='ls -ahF'"

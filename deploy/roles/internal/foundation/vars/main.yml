@@ -1,0 +1,36 @@
+default_locale: 'en_US.UTF-8'
+
+common_packages:
+  - build-essential
+  - ca-certificates
+  - vim
+  - git
+  - sudo
+  - zip
+  - unzip
+  - pigz
+  - aptitude
+  - htop
+  - iotop
+  - iftop
+  - sysstat
+  - rkhunter
+  - chkrootkit
+  - nscd
+  - lsof
+  - strace
+  - multitail
+  - bzip2
+  - libtool
+  - cmake
+  - curl
+  - python3
+  - python3-pip
+  - ntp
+  - logrotate
+  - ncdu
+  - telnet
+  - pv
+  - mc
+  - python-pkg-resources
+  - curl

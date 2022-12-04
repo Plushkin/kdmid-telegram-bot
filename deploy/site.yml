@@ -1,0 +1,6 @@
+- name: Configure bot instances
+  hosts: all
+  roles:
+    - { role: "geerlingguy.docker", tags: ["docker"], become: True }
+    - { role: "foundation", tags: ["foundation"], become: True }
+    - { role: "deploy", tags: ["deploy"], become: True }

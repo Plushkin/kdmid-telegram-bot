@@ -1,0 +1,59 @@
+# System update, requirements.
+- name: Update apt cache
+  become: yes
+  apt:
+    name: "*"
+    state: latest
+    update_cache: yes
+    force_apt_get: yes
+
+- name: Install common packages
+  apt: name={{common_packages}} state=latest
+
+- name: Enable NTP sync
+  service: name=ntp state=started enabled=yes
+
+# Date and time
+- name: 'Remove localtime file'
+  become: yes
+  file: 'path=/etc/localtime state=absent'
+  tags: locale
+
+- name: 'Link UTC localtime file'
+  become: yes
+  file: 'src=/usr/share/zoneinfo/UTC dest=/etc/localtime state=link'
+  tags: locale
+
+- name: Install default locale
+  lineinfile: "dest=/etc/default/locale state=present line='LC_ALL=\"{{ default_locale }}\"'"
+
+- name: Set hostname
+  hostname:
+    name: "{{ instance_name }}"
+  when: instance_name is defined
+
+- name: Add bash aliases
+  become: True
+  lineinfile:
+    path="/etc/profile.d/00-aliases.sh"
+    line="{{ item }}"
+    regexp='^{{ item }}$'
+    state=present
+    insertafter=EOF
+    create=True
+  with_items: "{{ aliases }}"
+
+- include_tasks: users.yml
+- include_tasks: ssh.yml
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    owner: "{{ app_user }}"
+    group: "{{ app_user_group }}"
+    state: directory
+    mode: 0755
+  tags:
+    - dir
+  with_items:
+    - "{{ docker_path }}"

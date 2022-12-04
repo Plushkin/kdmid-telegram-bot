@@ -24,3 +24,7 @@ screenshots/*.png
 # Ignore .env
 /.env*
 !.env.example
+
+# Deploy
+
+deploy/vpass
