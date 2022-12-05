@@ -89,7 +89,7 @@ class QueueChecker
   end
 
   def log(message)
-    log "[#{task_id}] #{message}"
+    log "[#{task.id}] #{message}"
   end
 
   def notify_users
