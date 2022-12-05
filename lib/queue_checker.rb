@@ -13,7 +13,7 @@ class QueueChecker
 
     @client = TwoCaptcha.new(ENV.fetch('TWO_CAPTCHA_KEY'))
     @current_time = Time.now.utc.to_s
-    $logger.info 'Init...'
+    log 'Init...'
 
     options = {}
     if ENV['BROWSER_PROFILE']
@@ -27,7 +27,7 @@ class QueueChecker
   end
 
   def check_queue
-    $logger.info "===== Current time: #{current_time} ====="
+    log "===== Current time: #{current_time} ====="
 
     create_dirs
 
@@ -68,7 +68,7 @@ class QueueChecker
     end
 
     browser.close
-    $logger.info '=' * 50
+    log '=' * 50
   rescue Exception => e
     $logger.error e.inspect
     sleep 3
@@ -89,7 +89,7 @@ class QueueChecker
   end
 
   def log(message)
-    $logger.info "[#{task_id}] #{message}"
+    log "[#{task_id}] #{message}"
   end
 
   def notify_users
@@ -115,14 +115,14 @@ class QueueChecker
     return unless browser.div(id: 'h-captcha').exists?
 
     sitekey = browser.div(id: 'h-captcha').attribute_value('data-sitekey')
-    $logger.info "sitekey: #{sitekey} url: #{browser.url}"
+    log "sitekey: #{sitekey} url: #{browser.url}"
 
     captcha = client.decode_hcaptcha!(sitekey: sitekey, pageurl: browser.url)
     captcha_response = captcha.text
-    $logger.info "captcha_response: #{captcha_response}"
+    log "captcha_response: #{captcha_response}"
 
     3.times do |i|
-      $logger.info "attempt: #{i}"
+      log "attempt: #{i}"
       sleep 2
       ['h-captcha-response', 'g-recaptcha-response'].each do |el_name|
         browser.execute_script(
@@ -139,6 +139,7 @@ class QueueChecker
 
     if browser.alert.exists?
       browser.alert.ok
+      log 'alert found'
     end
   end
 
@@ -147,7 +148,7 @@ class QueueChecker
     sleep 5
 
     while browser.div(id: 'ddg-captcha').exists? && attempt <= PASS_CAPTCHA_ATTEMPTS_LIMIT
-      $logger.info "attempt: [#{attempt}] let's find the ddg captcha image..."
+      log "attempt: [#{attempt}] let's find the ddg captcha image..."
 
       checkbox = browser.div(id: 'ddg-captcha')
       checkbox.wait_until(timeout: 60, &:exists?)
@@ -156,23 +157,28 @@ class QueueChecker
       captcha_image = browser.iframe(id: 'ddg-iframe').images(class: 'ddg-modal__captcha-image').first
       captcha_image.wait_until(timeout: 5, &:exists?)
 
-      $logger.info 'save captcha image to file...'
+      log 'save captcha image to file...'
       sleep 3
       image_filepath = "/files/captches/#{task.id}-#{current_time}.png"
       base64_to_file(captcha_image.src, image_filepath)
 
-      $logger.info 'decode captcha...'
+      log 'decode captcha...'
       captcha = client.decode!(path: image_filepath)
       captcha_code = captcha.text
-      $logger.info "captcha_code: #{captcha_code}"
+      log "captcha_code: #{captcha_code}"
 
-      # $logger.info 'Enter code:'
+      # log 'Enter code:'
       # code = gets
-      # $logger.info code
+      # log code
 
       text_field = browser.iframe(id: 'ddg-iframe').text_field(class: 'ddg-modal__input')
       text_field.set captcha_code
       browser.iframe(id: 'ddg-iframe').button(class: 'ddg-modal__submit').click
+
+      if browser.alert.exists?
+        browser.alert.ok
+        log 'alert found'
+      end
 
       attempt += 1
       sleep 15
@@ -196,25 +202,25 @@ class QueueChecker
 
     if browser.alert.exists?
       browser.alert.ok
-      $logger.info 'alert found'
+      log 'alert found'
     end
 
-    $logger.info "let's find the captcha image..."
+    log "let's find the captcha image..."
     captcha_image = browser.images(id: 'ctl00_MainContent_imgSecNum').first
     captcha_image.wait_until(timeout: 5, &:exists?)
 
-    $logger.info 'save captcha image to file...'
+    log 'save captcha image to file...'
     image_filepath = "/files/captches/#{task.id}-#{current_time}.png"
     File.write(image_filepath, captcha_image.to_png)
 
-    $logger.info 'decode captcha...'
+    log 'decode captcha...'
     captcha = client.decode!(path: image_filepath)
     captcha_code = captcha.text
-    $logger.info "captcha_code: #{captcha_code}"
+    log "captcha_code: #{captcha_code}"
 
-    # $logger.info 'Enter code:'
+    # log 'Enter code:'
     # code = gets
-    # $logger.info code
+    # log code
 
     text_field = browser.text_field(id: 'ctl00_MainContent_txtCode')
     text_field.set captcha_code
