@@ -25,7 +25,7 @@ module Services
         super
         errors.add(:url, I18n.t('errors.url.invalid')) if url.empty?
         errors.add(:url, I18n.t('errors.url.invalid')) if url.length > 255
-        # errors.add(:url, I18n.t('errors.url.not_available')) unless url_available?
+        errors.add(:url, I18n.t('errors.url.not_available')) unless url_available?
       end
 
       def url_available?
