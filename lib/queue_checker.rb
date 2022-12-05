@@ -89,7 +89,7 @@ class QueueChecker
   end
 
   def log(message)
-    log "[#{task.id}] #{message}"
+    $logger.info "[#{task.id}] #{message}"
   end
 
   def notify_users
