@@ -53,6 +53,8 @@ class QueueChecker
     pass_hcaptcha
     pass_ddgcaptcha
 
+    return if task_code_invalid
+
     click_make_appointment_button
 
     save_page
@@ -75,6 +77,20 @@ class QueueChecker
   end
 
   private
+
+  def task_code_invalid?
+    task_code_invalid = browser.div(text: /Защитный код заявки задан неверно/).exists?
+    return false unless task_code_invalid
+
+    log "task code invalid"
+    task.cancel!
+    browser.close
+    true
+  end
+
+  def log(message)
+    $logger.info "[#{task_id}] #{message}"
+  end
 
   def notify_users
     Telegram::Bot::Client.run($config.get_token, logger: $logger) do |bot|
