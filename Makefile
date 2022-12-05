@@ -15,6 +15,9 @@ app-prepare-db:
 app-db-migrate:
 	docker-compose run --rm bot rake db:migrate
 
+logs:
+	docker-compose logs bot -f --tail=100
+
 bash:
 	docker-compose exec bot /bin/bash
 

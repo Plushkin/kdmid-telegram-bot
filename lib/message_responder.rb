@@ -21,6 +21,10 @@ class MessageResponder
       when '/start'
         answer_with_greeting_message
       when '/end'
+        cancel_task = Services::CheckerTasks::Cancel.call(user: @user)
+        if cancel_task.success? && cancel_task.result
+          answer_with_message(I18n.t('task_removed_message', link: cancel_task.result))
+        end
         answer_with_farewell_message
       when Services::CheckerTasks::Create::KDMID_URL_REGEXP
         handle_kdmid_url_message
@@ -33,11 +37,11 @@ class MessageResponder
   private
 
   def handle_kdmid_url_message
-    result = Services::CheckerTasks::Create.call(url: message.text.strip, user: @user)
-    if result.success?
+    create_task = Services::CheckerTasks::Create.call(url: message.text.strip, user: @user)
+    if create_task.success? && create_task.result
       answer_with_message(I18n.t('task_added_message'))
     else
-      answer_with_message(I18n.t('url_invalid_message')) if result.errors[:url].any?
+      answer_with_message(I18n.t('url_invalid_message')) if create_task.errors[:url].any?
     end
   end
 

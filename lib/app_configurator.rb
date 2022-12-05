@@ -6,13 +6,16 @@ class AppConfigurator
   def configure
     setup_i18n
     setup_database
-    Bugsnag.configure do |config|
-      config.api_key = ENV.fetch('BUGSNAG_KEY')
-    end
 
-    at_exit do
-      if $!
-        Bugsnag.notify($!)
+    if ENV.fetch('APP_ENV') == 'production'
+      Bugsnag.configure do |config|
+        config.api_key = ENV.fetch('BUGSNAG_KEY')
+      end
+
+      at_exit do
+        if $!
+          Bugsnag.notify($!)
+        end
       end
     end
   end
@@ -34,6 +37,9 @@ class AppConfigurator
   end
 
   def setup_database
+    if ENV.fetch('APP_ENV') == 'development'
+      ActiveRecord::Base.logger = get_logger
+    end
     DatabaseConnector.establish_connection
   end
 end

@@ -12,6 +12,7 @@ require './lib/message_responder'
 require './lib/app_configurator'
 require './lib/services/application_service'
 require './lib/services/checker_tasks/create'
+require './lib/services/checker_tasks/cancel'
 require './lib/queue_checker'
 
 $config = AppConfigurator.new

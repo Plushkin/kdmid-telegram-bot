@@ -25,7 +25,7 @@ module Services
         super
         errors.add(:url, I18n.t('errors.url.invalid')) if url.empty?
         errors.add(:url, I18n.t('errors.url.invalid')) if url.length > 255
-        errors.add(:url, I18n.t('errors.url.not_available')) unless url_available?
+        # errors.add(:url, I18n.t('errors.url.not_available')) unless url_available?
       end
 
       def url_available?
@@ -51,20 +51,19 @@ module Services
       end
 
       def create_task(subdomain, order_id, code)
-        task = Task.find_by(subdomain: subdomain, order_id: order_id, code: code)
-        unless task
-          user.tasks.create!(url: url, subdomain: subdomain, order_id: order_id, code: code)
+        task = Task.where(subdomain: subdomain, order_id: order_id, code: code).order(:id).last
+        if task.nil? || task.canceled?
+          $logger.info "[Create task] #{task.inspect}"
+          @result = user.tasks.create(url: url, subdomain: subdomain, order_id: order_id, code: code)
           return
         end
 
         case
         when task.created? || task.in_progress?
           $logger.info "[Active task] #{task.inspect}"
-          return
         when task.stopped?
           $logger.info "[Stopped task] #{task.inspect}"
-          task.restart!
-          return
+          @result = task.restart!
         end
       end
 

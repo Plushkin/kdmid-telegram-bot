@@ -9,12 +9,15 @@ en:
     Your link was successfully added!
     I'll notify you when free slots become available.
 
+  task_removed_message: |
+    Your link %{link} was removed!
+
   url_invalid_message: |
     Sorry, but your link is invalid or unavailable now!
     Please check it opens in the browser correctly.
 
   dont_understand_message: I don't understand you :(
-  farewell_message: Bye! I'll miss you :(
+  farewell_message: Bye! Wish you luck!
 
   new_slot_found_message: "New slot found! Your link: %{link}"
 
