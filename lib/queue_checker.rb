@@ -7,6 +7,7 @@ class QueueChecker
   PASS_CAPTCHA_ATTEMPTS_LIMIT = 5
 
   def initialize(task)
+    @task = task
     @user = task.user
     @link = "http://#{task.subdomain}.kdmid.ru/queue/OrderInfo.aspx?id=#{task.order_id}&cd=#{task.code}"
 
