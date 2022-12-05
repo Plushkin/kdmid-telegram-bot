@@ -53,7 +53,7 @@ class QueueChecker
     pass_hcaptcha
     pass_ddgcaptcha
 
-    return if task_code_invalid
+    return if task_code_invalid?
 
     click_make_appointment_button
 
@@ -79,10 +79,10 @@ class QueueChecker
   private
 
   def task_code_invalid?
-    task_code_invalid = browser.div(text: /Защитный код заявки задан неверно/).exists?
-    return false unless task_code_invalid
+    invalid = browser.div(text: /Защитный код заявки задан неверно/).exists?
+    return false unless invalid
 
-    log "task code invalid"
+    log 'task code invalid'
     task.cancel!
     browser.close
     true
