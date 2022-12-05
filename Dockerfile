@@ -3,6 +3,7 @@ FROM ruby:3.1.3
 # Install bundler
 # Set LOCALE to UTF8
 RUN mkdir /gems \
+    mkdir /files \
     && apt update -qq \
     && apt install -y postgresql-client libxml2 libpq-dev locales build-essential sudo vim iputils-ping tzdata \
     && rm -rf /var/lib/apt/lists/* \

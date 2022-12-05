@@ -24,6 +24,9 @@ services:
   checker:
     <<: *app
     command: bin/checker
+    volumes:
+      - .:/app
+      - ./checker-files:/files
     depends_on:
       - db
       - hub

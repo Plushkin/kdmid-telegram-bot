@@ -28,6 +28,8 @@ class QueueChecker
   def check_queue
     $logger.info "===== Current time: #{current_time} ====="
 
+    create_dirs
+
     browser.goto @link
 
     pass_hcaptcha
@@ -84,6 +86,12 @@ class QueueChecker
     end
   end
 
+  def create_dirs
+    %w[captches screenshots pages].each do |folder_name|
+      FileUtils.mkdir_p "/files/#{folder_name}"
+    end
+  end
+
   def pass_hcaptcha
     sleep 5
 
@@ -133,7 +141,7 @@ class QueueChecker
 
       $logger.info 'save captcha image to file...'
       sleep 3
-      image_filepath = "./captches/#{current_time}.png"
+      image_filepath = "/files/captches/#{task.id}-#{current_time}.png"
       base64_to_file(captcha_image.src, image_filepath)
 
       $logger.info 'decode captcha...'
@@ -179,7 +187,7 @@ class QueueChecker
     captcha_image.wait_until(timeout: 5, &:exists?)
 
     $logger.info 'save captcha image to file...'
-    image_filepath = "./captches/#{current_time}.png"
+    image_filepath = "/files/captches/#{task.id}-#{current_time}.png"
     File.write(image_filepath, captcha_image.to_png)
 
     $logger.info 'decode captcha...'
@@ -202,7 +210,7 @@ class QueueChecker
   end
 
   def save_page
-    browser.screenshot.save "./screenshots/#{current_time}.png"
-    File.open("./pages/#{current_time}.html", 'w') { |f| f.write browser.html }
+    browser.screenshot.save "/files/screenshots/#{task.id}-#{current_time}.png"
+    File.open("/files/pages/#{task.id}-#{current_time}.html", 'w') { |f| f.write browser.html }
   end
 end
