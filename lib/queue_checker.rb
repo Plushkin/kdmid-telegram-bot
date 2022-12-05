@@ -1,5 +1,6 @@
 require 'two_captcha'
 require 'watir'
+require 'watir-get-image-content'
 
 class QueueChecker
   attr_reader :browser, :client, :current_time, :task, :user
