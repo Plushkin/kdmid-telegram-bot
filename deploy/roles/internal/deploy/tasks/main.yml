@@ -66,6 +66,13 @@
     cmd: docker-compose exec node-firefox /bin/bash -c "x11vnc -storepasswd {{ vnc_password }} /home/seluser/.vnc/passwd"
     chdir: "{{ app_path }}"
 
+- name: Add run check to crontab
+  become_user: "{{ app_user }}"
+  cron:
+    name: "Run queue checker"
+    minute: "*/5"
+    job: "cd {{ app_path }}; docker-compose up checker >> checker.log 2>&1"
+
 # - name: Restart firefox
 #   become_user: "{{ app_user }}"
 #   shell:
