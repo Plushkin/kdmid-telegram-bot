@@ -36,7 +36,7 @@ module Services
           connection.options[:open_timeout] = 3
           connection.options[:timeout] = 3
         end
-        response = conn.head('/')
+        response = conn.get('/')
         $logger.info("check #{url} is available. status: #{response.status} headers: #{response.headers.inspect}")
         response.success?
       rescue Faraday::ConnectionFailed => e
