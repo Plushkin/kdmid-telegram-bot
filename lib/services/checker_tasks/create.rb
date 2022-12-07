@@ -31,12 +31,16 @@ module Services
       def url_available?
         return true if ENV.fetch('APP_ENV') == 'test'
 
-        conn = Faraday.new(url: url) do |connection|
-          connection.response :follow_redirects
-          connection.options[:open_timeout] = 3
-          connection.options[:timeout] = 3
+        conn = Faraday.new(url: url) do |req|
+          req.response :follow_redirects
+          req.options[:open_timeout] = 3
+          req.options[:timeout] = 3
+          req.headers = {
+            'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36',
+            'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8'
+          }
         end
-        response = conn.get('/')
+        response = conn.head('/')
         $logger.info("check #{url} is available. status: #{response.status} headers: #{response.headers.inspect}")
         response.success?
       rescue Faraday::ConnectionFailed => e
