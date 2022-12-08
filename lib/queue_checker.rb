@@ -104,7 +104,8 @@ class QueueChecker
 
   def stop_text_found?
     browser.text.include?('Извините, но в настоящий момент') ||
-      browser.text.include?('Свободное время в системе записи отсутствует')
+      browser.text.include?('Свободное время в системе записи отсутствует') ||
+      browser.text.include?('Для проверки наличия свободного времени')
   end
 
   def task_code_invalid?
