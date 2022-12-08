@@ -159,9 +159,19 @@ class QueueChecker
         log "notify user: #{t.user_id} with message #{message}"
         MessageSender.new(bot: bot, chat_id: t.user.chat_id, username: t.user.username, text: message).send
         bot.api.send_photo(chat_id: t.user.chat_id, photo: Faraday::UploadIO.new(screenshot_path, 'image/png'))
+        notify_admin(bot, t, message)
         t.stop!
       end
     end
+  end
+
+  def notify_admin(bot, task, message)
+    admin_chat_id = ENV['ADMIN_CHAT_ID']
+    return unless admin_chat_id
+
+    message = "task ##{task.id} [#{message}]"
+    MessageSender.new(bot: bot, chat_id: admin_chat_id, username: 'admin', text: message).send
+    bot.api.send_photo(chat_id: admin_chat_id, photo: Faraday::UploadIO.new(screenshot_path, 'image/png'))
   end
 
   def create_dirs
