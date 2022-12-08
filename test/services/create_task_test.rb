@@ -4,7 +4,7 @@ describe Services::CheckerTasks::Create do
   let(:subdomain) { 'istanbul' }
   let(:order_id) { '104681' }
   let(:code) { '345AFDEA' }
-  let(:url) { "http://#{subdomain}.kdmid.ru/queue/OrderInfo.aspx?id=#{order_id}&cd=#{code}" }
+  let(:url) { "http://#{subdomain}.kdmid.ru/queue/Orderinfo.aspx?id=#{order_id}&cd=#{code}" }
 
   before do
     @user = User.create!(uid: 123)

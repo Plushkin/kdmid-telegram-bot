@@ -2,7 +2,7 @@ module Services
   module CheckerTasks
     class Create < ApplicationService
 
-      KDMID_URL_REGEXP = /^https?:\/\/(.+)\.kdmid\.ru\/queue\/OrderInfo\.aspx\?id=(.+)&cd=(.+)/
+      KDMID_URL_REGEXP = /^https?:\/\/(.+)\.kdmid\.ru\/queue\/OrderInfo\.aspx\?id=(.+)&cd=(.+)/i
       attr_reader :url, :user
 
       def initialize(url:, user:)
