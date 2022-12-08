@@ -66,7 +66,6 @@ class QueueChecker
       log 'slot not found'
     else
       log 'new slot found!'
-      task.stop!
       notify_users
     end
 
