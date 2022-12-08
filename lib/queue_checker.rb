@@ -38,7 +38,10 @@ class QueueChecker
 
     browser.button(id: 'ctl00_MainContent_ButtonA').wait_until(timeout: 30, &:exists?)
 
-    pass_captcha_on_form
+    unless pass_captcha_on_form
+      log "couldn't pass captch on form"
+      return
+    end
 
     browser.button(id: 'ctl00_MainContent_ButtonA').click
 
@@ -229,6 +232,10 @@ class QueueChecker
 
     text_field = browser.text_field(id: 'ctl00_MainContent_txtCode')
     text_field.set captcha_code
+    true
+  rescue Selenium::WebDriver::Error::JavascriptError => e
+    log "error: #{e.inspect}"
+    return false
   end
 
   def click_make_appointment_button
