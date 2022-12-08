@@ -59,10 +59,7 @@ class QueueChecker
 
     save_page
 
-    stop_text_found = browser.p(text: /Извините, но в настоящий момент/).exists? ||
-      browser.p(text: /Свободное время в системе записи отсутствует/).exists?
-
-    unless stop_text_found
+    unless stop_text_found?
       task.stop!
       notify_users
     end
@@ -77,6 +74,11 @@ class QueueChecker
   end
 
   private
+
+  def stop_text_found?
+    browser.text.include?('Извините, но в настоящий момент') ||
+      browser.text.include?('Свободное время в системе записи отсутствует')
+  end
 
   def task_code_invalid?
     invalid = browser.div(text: /Защитный код заявки задан неверно/).exists?
