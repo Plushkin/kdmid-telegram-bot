@@ -1,0 +1,52 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - master
+
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: Prod
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Deploy app
+        uses: dawidd6/action-ansible-playbook@v2
+        with:
+          playbook: site.yml
+          inventory: |
+            [all]
+            ${{ secrets.PROD_IP }}
+            [bot_prod]
+            ${{ secrets.PROD_IP }}
+          directory: ./deploy
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          requirements: roles/roles_requirements.yml
+          vault_password: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+          options: |
+            --limit bot_prod
+            --user apps
+            --tags deploy
+            --verbose
+
+      - name: Send success message
+        if: ${{ success() }}
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          format: markdown
+          message: "Bot delivered to *PROD*!"
+
+      - name: Send fail message
+        if: ${{ failure() }}
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          format: markdown
+          message: "🔥 Deliver of bot to *PROD* failed!"
