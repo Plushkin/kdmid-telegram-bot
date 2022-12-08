@@ -72,7 +72,7 @@
 #   cron:
 #     name: "Run queue checker"
 #     minute: "*/5"
-#     job: "cd {{ app_path }}; docker-compose up checker >> checker.log 2>&1"
+#     job: "cd {{ app_path }}; docker-compose up -d --force-recreate hub; sleep 5; docker-compose up checker >> checker.log 2>&1"
 
 # - name: Restart firefox
 #   become_user: "{{ app_user }}"
