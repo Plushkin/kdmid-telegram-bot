@@ -94,7 +94,7 @@ class QueueChecker
 
   def notify_users
     Telegram::Bot::Client.run($config.get_token, logger: $logger) do |bot|
-      active_tasks_for_subdomain = Taks.active.where(subdomain: task.subdomain).includes(:user)
+      active_tasks_for_subdomain = Task.active.where(subdomain: task.subdomain).includes(:user)
       active_tasks_for_subdomain.find_each do |t|
         message = I18n.t('new_slot_found_message', link: t.url)
         MessageSender.new(bot: bot, chat_id: t.user.chat_id, username: t.user.username, text: message).send
