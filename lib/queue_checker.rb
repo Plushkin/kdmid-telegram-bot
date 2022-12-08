@@ -58,6 +58,11 @@ class QueueChecker
 
     create_dirs
 
+    if bad_gateway_error?
+      log 'bad gateway error'
+      return
+    end
+
     unless visit_main_page_and_submit_form
       log "couldn't visit_main_page_and_submit_form"
       return
@@ -80,13 +85,22 @@ class QueueChecker
 
     click_make_appointment_button
 
+    if bad_gateway_error?
+      log 'bad gateway error'
+      return
+    end
+
     save_page
 
-    if stop_text_found?
-      log 'slot not found'
-    else
+    unless stop_text_found?
+      log 'stop text not found!'
+    end
+
+    if success_text_found?
       log 'new slot found!'
       notify_users
+    else
+      log 'slot not found'
     end
 
     browser.close
@@ -101,6 +115,17 @@ class QueueChecker
   end
 
   private
+
+  def bad_gateway_error?
+    browser.text.include?('Bad Gateway')
+  end
+
+  def success_text_found?
+    success_texts = [
+      'Для записи на прием необходимо выбрать время'
+    ]
+    success_texts.any? { |text| browser.text.include?(text) }
+  end
 
   def stop_text_found?
     failure_texts = [
