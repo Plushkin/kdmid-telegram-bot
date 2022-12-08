@@ -60,6 +60,7 @@ class QueueChecker
     save_page
 
     unless stop_text_found?
+      log 'new slot found!'
       task.stop!
       notify_users
     end
@@ -99,7 +100,9 @@ class QueueChecker
       active_tasks_for_subdomain = Task.active.where(subdomain: task.subdomain).includes(:user)
       active_tasks_for_subdomain.find_each do |t|
         message = I18n.t('new_slot_found_message', link: t.url)
+        log "notify user: #{t.user_id} with message #{message}"
         MessageSender.new(bot: bot, chat_id: t.user.chat_id, username: t.user.username, text: message).send
+        bot.api.send_photo(chat_id: t.user.chat_id, photo: Faraday::UploadIO.new(screenshot_path, 'image/png'))
         t.stop!
       end
     end
@@ -234,8 +237,12 @@ class QueueChecker
     make_appointment_btn.click
   end
 
+  def screenshot_path
+    "/files/screenshots/#{task.id}-#{current_time}.png"
+  end
+
   def save_page
-    browser.screenshot.save "/files/screenshots/#{task.id}-#{current_time}.png"
+    browser.screenshot.save screenshot_path
     File.open("/files/pages/#{task.id}-#{current_time}.html", 'w') { |f| f.write browser.html }
   end
 end
