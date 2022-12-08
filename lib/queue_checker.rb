@@ -26,10 +26,8 @@ class QueueChecker
     )
   end
 
-  def check_queue
-    log "===== Current time: #{current_time} ====="
-
-    create_dirs
+  def visit_main_page_and_submit_form
+    attempts ||= 1
 
     browser.goto @link
 
@@ -38,8 +36,25 @@ class QueueChecker
 
     browser.button(id: 'ctl00_MainContent_ButtonA').wait_until(timeout: 30, &:exists?)
 
-    unless pass_captcha_on_form
-      log "couldn't pass captch on form"
+    pass_captcha_on_form
+    true
+  rescue Selenium::WebDriver::Error::JavascriptError => e
+    log "error: #{e.inspect}"
+    if (attempts += 1) <= 3
+      log 'retrying visit_main_page_and_submit_form'
+      retry
+    else
+      return false
+    end
+  end
+
+  def check_queue
+    log "===== Current time: #{current_time} ====="
+
+    create_dirs
+
+    unless visit_main_page_and_submit_form
+      log "couldn't visit_main_page_and_submit_form"
       return
     end
 
@@ -233,10 +248,6 @@ class QueueChecker
 
     text_field = browser.text_field(id: 'ctl00_MainContent_txtCode')
     text_field.set captcha_code
-    true
-  rescue Selenium::WebDriver::Error::JavascriptError => e
-    log "error: #{e.inspect}"
-    return false
   end
 
   def click_make_appointment_button
