@@ -103,9 +103,13 @@ class QueueChecker
   private
 
   def stop_text_found?
-    browser.text.include?('Извините, но в настоящий момент') ||
-      browser.text.include?('Свободное время в системе записи отсутствует') ||
-      browser.text.include?('Для проверки наличия свободного времени')
+    failure_texts = [
+      'Извините, но в настоящий момент',
+      'Свободное время в системе записи отсутствует',
+      'Для проверки наличия свободного времени',
+      'Bad Gateway'
+    ]
+    failure_texts.any? { |text| browser.text.include?(text) }
   end
 
   def task_code_invalid?
