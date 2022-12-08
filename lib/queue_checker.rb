@@ -91,6 +91,8 @@ class QueueChecker
     sleep 3
     browser.close
     raise e
+  ensure
+    browser.close
   end
 
   private
