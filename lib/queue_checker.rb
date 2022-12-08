@@ -62,7 +62,9 @@ class QueueChecker
 
     save_page
 
-    unless stop_text_found?
+    if stop_text_found?
+      log 'slot not found'
+    else
       log 'new slot found!'
       task.stop!
       notify_users
