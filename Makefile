@@ -26,3 +26,6 @@ console:
 
 tests:
 	docker-compose exec bot rake
+
+sync-files:
+  rsync -a -P apps@bot-prod:/opt/docker/kdmid-bot/checker-files/ ./debug/

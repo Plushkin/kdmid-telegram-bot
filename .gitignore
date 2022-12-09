@@ -28,3 +28,5 @@ screenshots/*.png
 # Deploy
 
 deploy/vpass
+
+debug/

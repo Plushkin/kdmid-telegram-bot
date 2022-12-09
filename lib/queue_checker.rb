@@ -107,9 +107,10 @@ class QueueChecker
     log '=' * 50
   rescue Exception => e
     $logger.error e.inspect
+    save_page('error')
     sleep 3
     browser.close
-    raise e
+    Bugsnag.notify(e)
   ensure
     browser.close
   end
@@ -303,12 +304,12 @@ class QueueChecker
     make_appointment_btn.click
   end
 
-  def screenshot_path
-    "/files/screenshots/#{task.id}-#{current_time}.png"
+  def screenshot_path(file_prefix = '')
+    "/files/screenshots/#{file_prefix}#{task.id}-#{current_time}.png"
   end
 
-  def save_page
-    browser.screenshot.save screenshot_path
-    File.open("/files/pages/#{task.id}-#{current_time}.html", 'w') { |f| f.write browser.html }
+  def save_page(file_prefix = '')
+    browser.screenshot.save screenshot_path(file_prefix)
+    File.open("/files/pages/#{file_prefix}#{task.id}-#{current_time}.html", 'w') { |f| f.write browser.html }
   end
 end
