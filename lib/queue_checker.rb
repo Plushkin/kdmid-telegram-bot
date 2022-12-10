@@ -92,6 +92,8 @@ class QueueChecker
 
     save_page
 
+    mark_task_as_success
+
     unless stop_text_found?
       log 'stop text not found!'
     end
@@ -107,6 +109,7 @@ class QueueChecker
     log '=' * 50
   rescue Exception => e
     $logger.error e.inspect
+    mark_task_as_failed
     save_page('error')
     sleep 3
     browser.close
@@ -116,6 +119,19 @@ class QueueChecker
   end
 
   private
+
+  def mark_task_as_success
+    task.update(
+      last_success_checked_at: Time.now,
+      success_checks_count: task.success_checks_count + 1
+    )
+  end
+
+  def mark_task_as_failed
+    task.update(
+      failed_checks_count: task.failed_checks_count + 1
+    )
+  end
 
   def bad_gateway_error?
     browser.text.include?('Bad Gateway')

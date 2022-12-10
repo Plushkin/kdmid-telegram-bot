@@ -14,7 +14,7 @@ class Task < ActiveRecord::Base
 
   enum status: { created: 0, in_progress: 1, stopped: 2, canceled: 3 }
 
-  aasm column: 'status', enum: true do
+  aasm column: 'status', enum: true, timestamps: true do
     state :created, initial: true
     state :in_progress, :stopped, :canceled
 
