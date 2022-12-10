@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+
+require './lib/boot'
+
+admin_chat_id = ENV['ADMIN_CHAT_ID']
+return unless admin_chat_id
+
+tasks_by_subdomain = Task.active.group(:subdomain).count
+message = ''
+
+tasks_by_subdomain.each do |subdomain, count|
+  message << "\n=== subdomain: <b>#{subdomain}</b> count: <b>#{count}</b> ===\n"
+
+  task = Task.active.where(subdomain: subdomain).order(created_at: :desc).first
+  message << "started at: <b>#{task.in_progress_at}</b> last success check: <b>#{task.last_success_checked_at}</b> "
+  message << "success checks: <b>#{task.success_checks_count}</b> failed checks: <b>#{task.failed_checks_count}</b>\n"
+end
+
+return if message.empty?
+
+$logger.info 'Sending stat...'
+
+Telegram::Bot::Client.run($config.get_token, logger: $logger) do |bot|
+  MessageSender.new(bot: bot, chat_id: admin_chat_id, username: 'admin', text: "<b>STAT</b>\n#{message}").send
+end

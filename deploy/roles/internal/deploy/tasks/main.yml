@@ -74,6 +74,13 @@
 #     minute: "*/5"
 #     job: "cd {{ app_path }}; docker-compose up -d --force-recreate hub; sleep 5; docker-compose up checker >> checker.log 2>&1"
 
+- name: Add send stat to crontab
+  become_user: "{{ app_user }}"
+  cron:
+    name: "Send stat"
+    hour: "6"
+    job: "cd {{ app_path }}; docker-compose run --rm bot bin/send_stat >> send_stat.log 2>&1"
+
 # - name: Restart firefox
 #   become_user: "{{ app_user }}"
 #   shell:

@@ -1,3 +1,5 @@
+.PHONY: deploy
+
 app-build:
 	docker-compose build
 
@@ -28,4 +30,7 @@ tests:
 	docker-compose run --rm bot rake
 
 sync-files:
-  rsync -a -P apps@bot-prod:/opt/docker/kdmid-bot/checker-files/ ./debug/
+	rsync -a -P apps@bot-prod:/opt/docker/kdmid-bot/checker-files/ ./debug/
+
+deploy:
+	cd deploy; make deploy; cd -
