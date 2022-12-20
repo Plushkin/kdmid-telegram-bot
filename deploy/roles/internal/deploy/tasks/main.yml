@@ -79,6 +79,7 @@
   cron:
     name: "Send stat"
     hour: "6"
+    minute: "0"
     job: "cd {{ app_path }}; docker-compose run --rm bot bin/send_stat >> send_stat.log 2>&1"
 
 # - name: Restart firefox

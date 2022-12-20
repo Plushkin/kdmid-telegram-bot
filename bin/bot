@@ -6,9 +6,15 @@ $logger.debug 'Starting telegram bot'
 
 Telegram::Bot::Client.run($config.get_token, logger: $logger) do |bot|
   bot.listen do |message|
-    options = {bot: bot, message: message}
-
-    $logger.debug "@#{message.from.username}: #{message.text}"
-    MessageResponder.new(options).respond
+    case message
+    when Telegram::Bot::Types::Message
+      options = {bot: bot, message: message}
+      $logger.debug "@#{message.from.username}: #{message.text}"
+      MessageResponder.new(options).respond
+    when Telegram::Bot::Types::PollAnswer
+      $logger.debug 'poll answer'
+    else
+      $logger.debug 'Not sure what to do with this type of message'
+    end
   end
 end
