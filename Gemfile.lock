@@ -43,6 +43,7 @@ GEM
     minitest-hooks (1.5.0)
       minitest (> 5.3)
     multipart-post (2.2.3)
+    open3 (0.1.2)
     pg (1.4.2)
     pry (0.14.1)
       coderay (~> 1.1)
@@ -88,6 +89,7 @@ DEPENDENCIES
   faraday-follow_redirects
   i18n
   minitest-hooks
+  open3
   pg (= 1.4.2)
   pry
   rake

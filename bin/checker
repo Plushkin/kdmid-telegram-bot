@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require './lib/boot'
+require 'open3'
 
 $logger.debug 'Starting checker'
 
@@ -12,5 +13,11 @@ tasks_by_subdomain.each do |subdomain, count|
   task = Task.active.where(subdomain: subdomain).order(created_at: :desc).first
   $logger.info "[Process task] #{task.inspect}"
   task.start! if task.created?
-  QueueChecker.new(task).check_queue
+
+  Open3.popen2e('bin/run_task', task.id.to_s) do |stdin, stdout, status_thread|
+    stdout.each_line do |line|
+      $logger.info line
+    end
+    # raise "Run task ##{task.id} failed" unless status_thread.value.success?
+  end
 end
