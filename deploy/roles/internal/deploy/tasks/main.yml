@@ -8,7 +8,7 @@
   with_items:
     - "{{ docker_path }}"
     - "{{ app_path }}"
-    - "{{ app_path }}/checker-files"
+    - "{{ app_path }}/checker-files/logs"
   tags:
     - dir
 

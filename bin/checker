@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
 require './lib/boot'
-require 'open3'
 
 $logger.debug 'Starting checker'
 
@@ -14,10 +13,8 @@ tasks_by_subdomain.each do |subdomain, count|
   $logger.info "[Process task] #{task.inspect}"
   task.start! if task.created?
 
-  Open3.popen2e('bin/run_task', task.id.to_s) do |stdin, stdout, status_thread|
-    stdout.each_line do |line|
-      $logger.info line
-    end
-    # raise "Run task ##{task.id} failed" unless status_thread.value.success?
-  end
+  task_log_file_path = "/files/logs/#{task.id}.log"
+  FileUtils.touch task_log_file_path
+  pid = spawn("bin/run_task #{task.id.to_s} >> #{task_log_file_path} 2>&1")
+  $logger.info "keep going in ##{pid} process..."
 end
