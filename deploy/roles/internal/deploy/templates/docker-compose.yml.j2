@@ -28,7 +28,7 @@ services:
 
   checker:
     <<: *app
-    command: bin/checker
+    command: bash
     volumes:
       - ./src:/app
       - {{ app_path }}/checker-files:/files
