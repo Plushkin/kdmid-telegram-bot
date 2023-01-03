@@ -9,6 +9,9 @@ en:
     Your link was successfully added!
     I'll notify you when free slots become available.
 
+    You can help me pay for the server and captcha solver with a donation to
+    USDT TRC20 TGyUC1CWhXBLSAa8bneWrzam24WY84tQcF
+
   task_removed_message: |
     Your link %{link} was removed!
 

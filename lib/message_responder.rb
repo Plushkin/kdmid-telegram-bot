@@ -20,6 +20,8 @@ class MessageResponder
       case message.text
       when '/start'
         answer_with_greeting_message
+      when '/help'
+        answer_with_greeting_message
       when '/end'
         cancel_task = Services::CheckerTasks::Cancel.call(user: @user)
         if cancel_task.success? && cancel_task.result
