@@ -13,6 +13,7 @@ tasks_by_subdomain.each do |v|
   task = Task.active.where(subdomain: subdomain).order(created_at: :desc).first
   $logger.info "[Process task] #{task.inspect}"
   task.start! if task.created?
+  task.touch(:updated_at)
 
   task_log_file_path = "/files/logs/#{task.id}.log"
   FileUtils.touch task_log_file_path

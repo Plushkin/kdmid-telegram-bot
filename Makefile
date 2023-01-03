@@ -24,7 +24,7 @@ bash:
 	docker-compose exec bot /bin/bash
 
 console:
-	docker-compose exec bot rake console
+	docker-compose exec checker rake console
 
 tests:
 	docker-compose run --rm bot rake

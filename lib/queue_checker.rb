@@ -81,7 +81,7 @@ class QueueChecker
     pass_hcaptcha
     pass_ddgcaptcha
 
-    return if task_code_invalid?
+    return if task_invalid?
 
     click_make_appointment_button
 
@@ -155,11 +155,15 @@ class QueueChecker
     failure_texts.any? { |text| browser.text.include?(text) }
   end
 
-  def task_code_invalid?
-    invalid = browser.div(text: /Защитный код заявки задан неверно/).exists?
+  def task_invalid?
+    failure_texts = [
+      'Защитный код заявки задан неверно',
+      'Заявка удалена'
+    ]
+    invalid = failure_texts.any? { |text| browser.text.include?(text) }
     return false unless invalid
 
-    log 'task code invalid'
+    log 'task invalid'
     task.cancel!
     browser.close
     true

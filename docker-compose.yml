@@ -23,14 +23,12 @@ services:
 
   checker:
     <<: *app
-    command: bin/checker
+    command: bash
     volumes:
       - .:/app
       - ./checker-files:/files
     depends_on:
       - db
-      - hub
-      - node-firefox
 
   db:
     image: postgres:14.5
