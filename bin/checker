@@ -4,10 +4,11 @@ require './lib/boot'
 
 $logger.debug 'Starting checker'
 
-tasks_by_subdomain = Task.active.group(:subdomain).count
+tasks_by_subdomain = Task.active.group(:subdomain).maximum(:updated_at).sort_by{|v| v[1]}.take(2)
 
-tasks_by_subdomain.each do |subdomain, count|
-  $logger.info "subdomain: #{subdomain} count: #{count}"
+tasks_by_subdomain.each do |v|
+  subdomain, updated_at = v
+  $logger.info "subdomain: #{subdomain} updated_at: #{updated_at}"
 
   task = Task.active.where(subdomain: subdomain).order(created_at: :desc).first
   $logger.info "[Process task] #{task.inspect}"

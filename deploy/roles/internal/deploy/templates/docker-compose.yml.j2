@@ -28,14 +28,12 @@ services:
 
   checker:
     <<: *app
-    command: bash
+    command: bash -c 'while true; do bin/checker >> /files/logs/checker.log 2>&1; sleep 120; done'
     volumes:
       - ./src:/app
       - {{ app_path }}/checker-files:/files
     depends_on:
       - db
-      - hub
-      - node-firefox
 
   db:
     image: postgres:14.5
@@ -49,7 +47,7 @@ services:
       POSTGRES_DB: {{ postgres_db}}
 
   hub:
-    image: selenium/hub:4.3.0
+    image: selenium/hub:latest
     environment:
       GRID_BROWSER_TIMEOUT: 10000 # 10 seconds
       GRID_NEW_SESSION_WAIT_TIMEOUT: 20000
@@ -59,11 +57,13 @@ services:
       - "4444"
 
   node-firefox:
-    image: selenium/node-firefox:103.0
+    image: selenium/node-firefox:latest
     environment: &SELENIUM_NODE_ENV
       SE_EVENT_BUS_HOST: hub
       SE_EVENT_BUS_PUBLISH_PORT: 4442
       SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+      SE_NODE_MAX_SESSIONS: 2
+      SE_NODE_OVERRIDE_MAX_SESSIONS: true
       HUB_HOST: hub
       HUB_PORT: 4444
     shm_size: 2gb

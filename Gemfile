@@ -9,8 +9,8 @@ gem 'aasm'
 gem 'faraday-follow_redirects'
 gem 'open3'
 
-gem 'selenium-webdriver', '4.3.0'
-gem 'watir'
+gem 'selenium-webdriver', '4.7.1'
+gem 'watir', '7.2.1'
 gem 'watir-get-image-content'
 gem 'two_captcha'
 
