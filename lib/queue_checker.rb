@@ -96,6 +96,7 @@ class QueueChecker
 
     unless stop_text_found?
       log 'stop text not found!'
+      notify_admin_stop_text_not_found
     end
 
     if success_text_found?
@@ -179,6 +180,12 @@ class QueueChecker
         notify_admin(bot, t, message)
         t.stop!
       end
+    end
+  end
+
+  def notify_admin_stop_text_not_found
+    Telegram::Bot::Client.run($config.get_token, logger: $logger) do |bot|
+      notify_admin(bot, task, 'stop text not found')
     end
   end
 
