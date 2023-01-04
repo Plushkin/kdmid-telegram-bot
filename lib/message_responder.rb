@@ -21,7 +21,7 @@ class MessageResponder
       when '/start'
         answer_with_greeting_message
       when '/help'
-        answer_with_greeting_message
+        answer_with_help_message
       when '/end'
         cancel_task = Services::CheckerTasks::Cancel.call(user: @user)
         if cancel_task.success? && cancel_task.result
@@ -42,6 +42,7 @@ class MessageResponder
     create_task = Services::CheckerTasks::Create.call(url: message.text.strip, user: @user)
     if create_task.success? && create_task.result
       answer_with_message(I18n.t('task_added_message'))
+      answer_with_message(I18n.t('donation_message'))
     else
       answer_with_message(I18n.t('url_invalid_message')) if create_task.errors[:url].any?
     end
@@ -69,6 +70,10 @@ class MessageResponder
 
   def answer_with_greeting_message
     answer_with_message I18n.t('greeting_message')
+  end
+
+  def answer_with_help_message
+    answer_with_message I18n.t('help_message')
   end
 
   def answer_with_farewell_message

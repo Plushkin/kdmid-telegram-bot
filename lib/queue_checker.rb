@@ -181,6 +181,8 @@ class QueueChecker
         log "notify user: #{t.user_id} with message #{message}"
         MessageSender.new(bot: bot, chat_id: t.user.chat_id, username: t.user.username, text: message).send
         bot.api.send_photo(chat_id: t.user.chat_id, photo: Faraday::UploadIO.new(screenshot_path, 'image/png'))
+        MessageSender.new(bot: bot, chat_id: t.user.chat_id, username: t.user.username, text: I18n.t('donation_message')).send
+
         notify_admin(bot, t, message)
         t.stop!
       end

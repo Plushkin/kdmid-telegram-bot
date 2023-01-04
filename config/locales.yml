@@ -5,12 +5,29 @@ en:
     For beginning please send me a link that your receive after registration on the site.
     Link should looks like: https://istanbul.kdmid.ru/queue/OrderInfo.aspx?id=123&cd=123
 
+    Available commands:
+      /start - show this message
+      /end - stop checking your link
+      /help - show help
+
+  help_message: |
+    Kdmid bot checks queue on sites like *.kdmid.ru for <b>free slots</b>.
+
+    For beginning please send me a link that your receive after registration on the site.
+    Link should looks like: https://istanbul.kdmid.ru/queue/OrderInfo.aspx?id=123&cd=123
+
+    Available commands:
+      /start - show this message
+      /end - stop checking your link
+      /help - show help
+
+  donation_message: |
+    You can help me pay for the server and captcha solver with a donation to
+    USDT TRC20 TGyUC1CWhXBLSAa8bneWrzam24WY84tQcF
+
   task_added_message: |
     Your link was successfully added!
     I'll notify you when free slots become available.
-
-    You can help me pay for the server and captcha solver with a donation to
-    USDT TRC20 TGyUC1CWhXBLSAa8bneWrzam24WY84tQcF
 
   task_removed_message: |
     Your link %{link} was removed!
