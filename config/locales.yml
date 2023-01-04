@@ -39,7 +39,7 @@ en:
   dont_understand_message: I don't understand you :(
   farewell_message: Bye! Wish you luck!
 
-  new_slot_found_message: "New slot found! Your link: %{link}"
+  new_slot_found_message: "New slot found! Your link: %{link}. I'll stop checking your link!"
 
   activemodel:
     errors:
