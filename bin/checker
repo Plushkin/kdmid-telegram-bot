@@ -10,7 +10,7 @@ tasks_by_subdomain.each do |v|
   subdomain, updated_at = v
   $logger.info "subdomain: #{subdomain} updated_at: #{updated_at}"
 
-  task = Task.active.where(subdomain: subdomain).order(created_at: :desc).first
+  task = Task.to_process(subdomain).first
   $logger.info "[Process task] #{task.inspect}"
   task.start! if task.created?
   task.touch(:updated_at)

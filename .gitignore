@@ -30,3 +30,5 @@ screenshots/*.png
 deploy/vpass
 
 debug/
+
+dumps/

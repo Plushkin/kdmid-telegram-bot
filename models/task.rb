@@ -10,7 +10,8 @@ class Task < ActiveRecord::Base
 
   validate :uniqueness_by_order_id_and_code
 
-  scope :active, -> { where(status: [:created, :in_progress]) }
+  scope :active, -> { where(status: %i[created in_progress]) }
+  scope :to_process, -> (subdomain) { active.where(subdomain: subdomain).order(:updated_at) }
 
   enum status: { created: 0, in_progress: 1, stopped: 2, canceled: 3 }
 

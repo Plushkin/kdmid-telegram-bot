@@ -7,32 +7,56 @@
     <link href="https://cdn.jsdelivr.net/npm/daisyui@2.46.1/dist/full.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              clifford: '#da373d',
-            }
-          }
-        }
-      }
+      // tailwind.config = {
+      //   theme: {
+      //     extend: {
+      //       colors: {
+      //         clifford: '#da373d',
+      //       }
+      //     }
+      //   }
+      // }
     </script>
   </head>
-  <body class="font-sans" data-theme="dark">
-
+  <body class="font-sans bg-base-200">
     <div class="container mx-auto p-10">
 
-      <div class="relative rounded-xl overflow-auto p-8">
-        <div class="flex flex-row items-stretch space-x-4 text-white text-sm leading-6">
-          <% @stat.each do |subdomain, stat| %>
-            <div class="rounded-lg flex items-center justify-center bg-fuchsia-500 shadow-lg p-2">
+      <div class="stats shadow mb-8">
+        <div class="stat">
+          <div class="stat-figure text-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+          </div>
+          <div class="stat-title">Total Users</div>
+          <div class="stat-value text-primary"><%= @stat[:users_count] %></div>
+          <div class="stat-desc"></div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-figure text-secondary">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+          </div>
+          <div class="stat-title">Tasks count</div>
+          <div class="stat-value text-secondary"><%= @stat[:tasks_count] %></div>
+          <div class="stat-desc"></div>
+        </div>
+      </div>
+
+      <div class="relative rounded-xl overflow-auto">
+        <div class="flex flex-row flex-wrap items-stretch text-white text-sm leading-6 gap-4">
+          <% @stat[:subdomains].each do |subdomain, stat| %>
+            <% with_issue = stat[:updated_at] != stat[:last_success_checked_at] %>
+            <div class="rounded-lg flex items-center content-center justify-center <%= with_issue ? 'bg-fuchsia-500' : 'bg-stone-200' %> shadow-lg p-4">
               <div class="font-mono text-white text-sm font-bold leading-6">
                 <div class="grid grid-cols-1 gap-2 content-center w-full rounded-lg bg-stripes-sky text-center">
-                  <div class="p-2 shadow-lg rounded-lg bg-sky-500"><span class="font-bold"><%= subdomain %></span></div>
-                  <div class="p-4 shadow-lg rounded-lg bg-indigo-500">created: <%= stat[:created_at] %></div>
-                  <div class="p-4 shadow-lg rounded-lg bg-indigo-500">last success: <%= stat[:last_success_checked_at] %></div>
-                  <div class="p-4 shadow-lg rounded-lg bg-indigo-500">success: <%= stat[:success_checks_count] %></div>
-                  <div class="p-4 shadow-lg rounded-lg bg-indigo-500">failed: <%= stat[:failed_checks_count] %></div>
+                  <div class="indicator">
+                    <span class="indicator-item badge"><%= stat[:count] %></span>
+                    <div class="p-2 shadow-lg rounded-lg bg-sky-500 text-xl"><span class="font-bold"><%= subdomain %></span></div>
+                  </div>
+                  <div class="p-2 shadow-lg rounded-lg bg-indigo-500">created: <%= stat[:created_at] %></div>
+                  <div class="p-2 shadow-lg rounded-lg bg-indigo-500">updated: <%= stat[:updated_at] %></div>
+                  <div class="p-2 shadow-lg rounded-lg bg-indigo-500">last success: <%= stat[:last_success_checked_at] %></div>
+                  <div class="p-2 shadow-lg rounded-lg bg-green-600">success: <%= stat[:success_checks_count] %></div>
+                  <div class="p-2 shadow-lg rounded-lg bg-red-600">failed: <%= stat[:failed_checks_count] %></div>
                 </div>
               </div>
             </div>
@@ -40,28 +64,33 @@
         </div>
       </div>
 
-      <!-- <div class="overflow-x-auto"> -->
-      <!--   <table class="table table-zebra w-full"> -->
-      <!--     &#60;&#33;&#45;&#45; head &#45;&#45;&#62; -->
-      <!--     <thead> -->
-      <!--       <tr> -->
-      <!--         <th></th> -->
-      <!--         <th></th> -->
-      <!--         <th></th> -->
-      <!--         <th></th> -->
-      <!--       </tr> -->
-      <!--     </thead> -->
-      <!--     <tbody> -->
-      <!--       &#60;&#33;&#45;&#45; row 1 &#45;&#45;&#62; -->
-      <!--       <tr> -->
-      <!--         <th>1</th> -->
-      <!--         <td></td> -->
-      <!--         <td></td> -->
-      <!--         <td></td> -->
-      <!--       </tr> -->
-      <!--     </tbody> -->
-      <!--   </table> -->
-      <!-- </div> -->
+      <div class="overflow-x-auto mt-8">
+        <table class="table table-zebra w-full">
+          <!-- head -->
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>status</th>
+              <th>subdomain</th>
+              <th>username</th>
+              <th>created</th>
+              <th>updated</th>
+            </tr>
+          </thead>
+          <tbody>
+          <% @stat[:tasks].each do |task| %>
+            <tr>
+              <th><%= task.id %></th>
+              <th><%= task.status %></th>
+              <th><a class="link link-accent" target="_blank" href="<%= task.url %>"><%= task.subdomain %></a></th>
+              <th><%= task.user.username %></th>
+              <th><%= task.created_at.in_time_zone('Europe/Istanbul').strftime('%Y-%m-%d %H:%M:%S') %></th>
+              <th><%= task.updated_at.in_time_zone('Europe/Istanbul').strftime('%Y-%m-%d %H:%M:%S') %></th>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
 
     </div>
   </body>

@@ -8,7 +8,7 @@ $stdout.sync = true
 
 if ENV.fetch('APP_ENV') == 'production'
   use Rack::Auth::Basic do |username, password|
-    username == ENV['basic_auth_username'] && password == ENV['basic_auth_password']
+    username == ENV['BASIC_AUTH_USERNAME'] && password == ENV['BASIC_AUTH_PASSWORD']
   end
 end
 

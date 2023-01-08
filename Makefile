@@ -34,3 +34,9 @@ sync-files:
 
 deploy:
 	cd deploy; make deploy; cd -
+
+dump-db:
+	docker-compose exec db pg_dumpall -c -U postgres > ./dumps/dump_`date +%d-%m-%Y"_"%H_%M_%S`.sql
+
+restore-db:
+	cat ./dumps/$(dump_file_name) | docker exec -i kdmid-telegram-bot-db-1 psql -U postgres
