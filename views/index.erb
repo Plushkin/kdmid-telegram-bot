@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Kdmid stat</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@2.46.1/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              clifford: '#da373d',
+            }
+          }
+        }
+      }
+    </script>
+  </head>
+  <body class="font-sans" data-theme="dark">
+
+    <div class="container mx-auto p-10">
+
+      <div class="relative rounded-xl overflow-auto p-8">
+        <div class="flex flex-row items-stretch space-x-4 text-white text-sm leading-6">
+          <% @stat.each do |subdomain, stat| %>
+            <div class="rounded-lg flex items-center justify-center bg-fuchsia-500 shadow-lg p-2">
+              <div class="font-mono text-white text-sm font-bold leading-6">
+                <div class="grid grid-cols-1 gap-2 content-center w-full rounded-lg bg-stripes-sky text-center">
+                  <div class="p-2 shadow-lg rounded-lg bg-sky-500"><span class="font-bold"><%= subdomain %></span></div>
+                  <div class="p-4 shadow-lg rounded-lg bg-indigo-500">created: <%= stat[:created_at] %></div>
+                  <div class="p-4 shadow-lg rounded-lg bg-indigo-500">last success: <%= stat[:last_success_checked_at] %></div>
+                  <div class="p-4 shadow-lg rounded-lg bg-indigo-500">success: <%= stat[:success_checks_count] %></div>
+                  <div class="p-4 shadow-lg rounded-lg bg-indigo-500">failed: <%= stat[:failed_checks_count] %></div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- <div class="overflow-x-auto"> -->
+      <!--   <table class="table table-zebra w-full"> -->
+      <!--     &#60;&#33;&#45;&#45; head &#45;&#45;&#62; -->
+      <!--     <thead> -->
+      <!--       <tr> -->
+      <!--         <th></th> -->
+      <!--         <th></th> -->
+      <!--         <th></th> -->
+      <!--         <th></th> -->
+      <!--       </tr> -->
+      <!--     </thead> -->
+      <!--     <tbody> -->
+      <!--       &#60;&#33;&#45;&#45; row 1 &#45;&#45;&#62; -->
+      <!--       <tr> -->
+      <!--         <th>1</th> -->
+      <!--         <td></td> -->
+      <!--         <td></td> -->
+      <!--         <td></td> -->
+      <!--       </tr> -->
+      <!--     </tbody> -->
+      <!--   </table> -->
+      <!-- </div> -->
+
+    </div>
+  </body>
+</html>

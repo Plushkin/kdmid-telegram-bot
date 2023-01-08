@@ -14,6 +14,10 @@ gem 'watir', '7.2.1'
 gem 'watir-get-image-content'
 gem 'two_captcha'
 
+gem 'sinatra'
+gem 'sinatra-contrib'
+gem 'puma'
+
 gem 'pry'
 gem 'minitest-hooks'
 gem 'bugsnag'

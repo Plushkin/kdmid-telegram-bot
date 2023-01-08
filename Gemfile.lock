@@ -41,12 +41,21 @@ GEM
     minitest (5.16.3)
     minitest-hooks (1.5.0)
       minitest (> 5.3)
+    multi_json (1.15.0)
     multipart-post (2.2.3)
+    mustermann (3.0.0)
+      ruby2_keywords (~> 0.0.1)
+    nio4r (2.5.8)
     open3 (0.1.2)
     pg (1.4.2)
     pry (0.14.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
+    puma (6.0.2)
+      nio4r (~> 2.0)
+    rack (2.2.5)
+    rack-protection (3.0.5)
+      rack
     rake (13.0.6)
     regexp_parser (2.6.1)
     rexml (3.2.5)
@@ -56,12 +65,24 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
+    sinatra (3.0.5)
+      mustermann (~> 3.0)
+      rack (~> 2.2, >= 2.2.4)
+      rack-protection (= 3.0.5)
+      tilt (~> 2.0)
+    sinatra-contrib (3.0.5)
+      multi_json
+      mustermann (~> 3.0)
+      rack-protection (= 3.0.5)
+      sinatra (= 3.0.5)
+      tilt (~> 2.0)
     telegram-bot-ruby (0.23.0)
       dry-inflector
       faraday (~> 2.0)
       faraday-multipart (~> 1.0)
       virtus (~> 2.0)
     thread_safe (0.3.6)
+    tilt (2.0.11)
     two_captcha (1.8.0)
     tzinfo (2.0.5)
       concurrent-ruby (~> 1.0)
@@ -90,8 +111,11 @@ DEPENDENCIES
   open3
   pg (= 1.4.2)
   pry
+  puma
   rake
   selenium-webdriver (= 4.7.1)
+  sinatra
+  sinatra-contrib
   telegram-bot-ruby
   two_captcha
   watir (= 7.2.1)

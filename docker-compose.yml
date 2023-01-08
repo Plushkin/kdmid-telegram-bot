@@ -30,6 +30,15 @@ services:
     depends_on:
       - db
 
+  web:
+    <<: *app
+    restart: always
+    command: bundle exec ruby web.rb
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+
   db:
     image: postgres:14.5
     restart: always
