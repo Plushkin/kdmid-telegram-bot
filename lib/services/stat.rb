@@ -17,11 +17,14 @@ module Services
     end
 
     def collect_for_subdomains
-      tasks_by_subdomain = Task.active.group(:subdomain).count
+      tasks_by_subdomain = Task
+        .active
+        .group(:subdomain)
+        .pluck(Arel.sql('subdomain, COUNT(*), SUM(success_checks_count), SUM(failed_checks_count)'))
 
       tasks_by_subdomain = tasks_by_subdomain.sort_by { |v| v[1] }.reverse
       tasks_by_subdomain.each do |v|
-        subdomain, count = v
+        subdomain, count, success_checks_count, failed_checks_count = v
         task = Task.active.where(subdomain: subdomain).order(updated_at: :desc).first
 
         @result[:subdomains][subdomain] = {
@@ -30,8 +33,8 @@ module Services
           updated_at: task.updated_at.in_time_zone('Europe/Istanbul').strftime('%Y-%m-%d %H:%M:%S'),
           started_at: task.in_progress_at&.in_time_zone('Europe/Istanbul')&.strftime('%Y-%m-%d %H:%M:%S'),
           last_success_checked_at: task.last_success_checked_at&.in_time_zone('Europe/Istanbul')&.strftime('%Y-%m-%d %H:%M:%S'),
-          success_checks_count: task.success_checks_count,
-          failed_checks_count: task.failed_checks_count
+          success_checks_count: success_checks_count,
+          failed_checks_count: failed_checks_count
         }
       end
     end

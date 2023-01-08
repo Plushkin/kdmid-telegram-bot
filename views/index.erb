@@ -79,9 +79,17 @@
           </thead>
           <tbody>
           <% @stat[:tasks].each do |task| %>
+            <% status_class = {
+              'created' => 'badge-primary',
+              'in_progress' => 'badge-secondary',
+              'stopped' => 'badge-accent',
+              'canceled' => ''
+            }.fetch(task.status) %>
             <tr>
               <th><%= task.id %></th>
-              <th><%= task.status %></th>
+              <th>
+                <div class="badge <%= status_class %>"><%= task.status %></div>
+              </th>
               <th><a class="link link-accent" target="_blank" href="<%= task.url %>"><%= task.subdomain %></a></th>
               <th><%= task.user.username %></th>
               <th><%= task.created_at.in_time_zone('Europe/Istanbul').strftime('%Y-%m-%d %H:%M:%S') %></th>
