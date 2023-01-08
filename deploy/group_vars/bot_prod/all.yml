@@ -3,3 +3,5 @@ app_path: /opt/docker/kdmid-bot
 app_env: production
 
 app_repo_url: https://github.com/accessd/kdmid-telegram-bot.git
+
+max_firefox_sessions: 5

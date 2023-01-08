@@ -4,7 +4,8 @@ require './lib/boot'
 
 $logger.debug 'Starting checker'
 
-tasks_by_subdomain = Task.active.group(:subdomain).maximum(:updated_at).sort_by{|v| v[1]}.take(2)
+max_sessions = ENV.fetch('MAX_FIREFOX_SESSIONS')
+tasks_by_subdomain = Task.active.group(:subdomain).maximum(:updated_at).sort_by{|v| v[1]}.take(max_sessions)
 
 tasks_by_subdomain.each do |v|
   subdomain, updated_at = v

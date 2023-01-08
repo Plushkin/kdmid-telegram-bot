@@ -19,3 +19,5 @@ aliases:
   - "alias ll='ls -la'"
   - "alias gpr='git pull'"
   - "alias l='ls -ahF'"
+
+max_firefox_sessions: 1

@@ -55,11 +55,11 @@
     cmd: docker-compose up -d hub node-firefox db bot
     chdir: "{{ app_path }}"
 
-# - name: Restart bot
-#   become_user: "{{ app_user }}"
-#   shell:
-#     cmd: docker-compose restart bot checker
-#     chdir: "{{ app_path }}"
+- name: Restart bot and web
+  become_user: "{{ app_user }}"
+  shell:
+    cmd: docker-compose restart bot web
+    chdir: "{{ app_path }}"
 
 - name: Update vnc password
   become_user: "{{ app_user }}"
