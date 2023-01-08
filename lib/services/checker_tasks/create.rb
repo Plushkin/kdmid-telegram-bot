@@ -58,8 +58,8 @@ module Services
       def create_task(subdomain, order_id, code)
         task = Task.where(subdomain: subdomain, order_id: order_id, code: code).order(:id).last
         if task.nil? || task.canceled?
-          $logger.info "[Create task] #{task.inspect}"
           @result = user.tasks.create(url: url, subdomain: subdomain, order_id: order_id, code: code)
+          $logger.info "[Create task] #{@result.inspect}"
           return
         end
 

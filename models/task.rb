@@ -26,10 +26,13 @@ class Task < ActiveRecord::Base
     event :start do
       transitions from: :created,
                   to: %i[in_progress stopped]
+      after do
+        update!(in_progress_at: Time.now)
+      end
     end
 
     event :stop do
-      transitions from: [:created, :in_progress],
+      transitions from: %i[created in_progress],
                   to: :stopped
     end
 
