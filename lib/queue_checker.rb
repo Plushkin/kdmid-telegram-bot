@@ -42,7 +42,9 @@ class QueueChecker
     browser.button(id: 'ctl00_MainContent_ButtonA').wait_until(timeout: 30, &:exists?)
 
     pass_captcha_on_form
+    sleep 1
     browser.button(id: 'ctl00_MainContent_ButtonA').click
+    sleep 1
 
     if browser.text.include?('Символы с картинки введены неправильно') && (pass_captcha_attempts -= 1) >= 0
       log 'wrong captcha. try one more time...'
