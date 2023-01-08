@@ -46,7 +46,7 @@ class QueueChecker
     browser.button(id: 'ctl00_MainContent_ButtonA').click
     sleep 1
 
-    if browser.text.include?('Символы с картинки введены неправильно') && (pass_captcha_attempts -= 1) >= 0
+    if browser.text.include?('Символы с картинки введены не правильно') && (pass_captcha_attempts -= 1) >= 0
       log 'wrong captcha. try one more time...'
       visit_main_page_and_submit_form(pass_captcha_attempts)
     end
