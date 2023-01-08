@@ -26,8 +26,8 @@ class QueueChecker
     )
   end
 
-  def visit_main_page_and_submit_form
-    attempts ||= 1
+  def visit_main_page_and_submit_form(pass_captcha_attempts = 3)
+    retries ||= 1
 
     browser.goto @link
 
@@ -42,10 +42,17 @@ class QueueChecker
     browser.button(id: 'ctl00_MainContent_ButtonA').wait_until(timeout: 30, &:exists?)
 
     pass_captcha_on_form
+    browser.button(id: 'ctl00_MainContent_ButtonA').click
+
+    if browser.text.include?('Символы с картинки введены неправильно') && if (pass_captcha_attempts -= 1) >= 0
+      log 'wrong captcha. try one more time...'
+      visit_main_page_and_submit_form(pass_captcha_attempts)
+    end
+
     true
   rescue Selenium::WebDriver::Error::JavascriptError => e
     log "error: #{e.inspect}"
-    if (attempts += 1) <= 3
+    if (retries += 1) <= 3
       log 'retrying visit_main_page_and_submit_form'
       retry
     else
@@ -67,8 +74,6 @@ class QueueChecker
       log "couldn't visit_main_page_and_submit_form"
       return
     end
-
-    browser.button(id: 'ctl00_MainContent_ButtonA').click
 
     sleep 3
 
