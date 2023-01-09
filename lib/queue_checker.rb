@@ -49,7 +49,7 @@ class QueueChecker
       browser.alert.ok
     end
 
-    if browser.text.include?('Символы с картинки введены не правильно') && (pass_captcha_attempts -= 1) >= 0
+    if browser.text.include?('Символы с картинки введены') && (pass_captcha_attempts -= 1) >= 0
       log 'wrong captcha. try one more time...'
       visit_main_page_and_submit_form(pass_captcha_attempts)
     end
