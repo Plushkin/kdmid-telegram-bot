@@ -27,6 +27,10 @@ module Services
         subdomain, count, success_checks_count, failed_checks_count = v
         task = Task.active.where(subdomain: subdomain).order(updated_at: :desc).first
 
+        last_success_checked_at = task.last_success_checked_at || Time.now
+        minutes_between_update_and_check = (task.updated_at - last_success_checked_at).to_f / 60
+        with_issue = minutes_between_update_and_check > 10 || failed_checks_count > success_checks_count
+
         @result[:subdomains][subdomain] = {
           count: count,
           created_at: task.created_at.in_time_zone('Europe/Istanbul').strftime('%Y-%m-%d %H:%M:%S'),
@@ -34,7 +38,8 @@ module Services
           started_at: task.in_progress_at&.in_time_zone('Europe/Istanbul')&.strftime('%Y-%m-%d %H:%M:%S'),
           last_success_checked_at: task.last_success_checked_at&.in_time_zone('Europe/Istanbul')&.strftime('%Y-%m-%d %H:%M:%S'),
           success_checks_count: success_checks_count,
-          failed_checks_count: failed_checks_count
+          failed_checks_count: failed_checks_count,
+          with_issue: with_issue
         }
       end
     end

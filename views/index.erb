@@ -44,8 +44,7 @@
       <div class="relative rounded-xl overflow-auto">
         <div class="flex flex-row flex-wrap items-stretch text-white text-sm leading-6 gap-4">
           <% @stat[:subdomains].each do |subdomain, stat| %>
-            <% with_issue = stat[:updated_at] != stat[:last_success_checked_at] %>
-            <div class="rounded-lg flex items-center content-center justify-center <%= with_issue ? 'bg-fuchsia-500' : 'bg-stone-200' %> shadow-lg p-4">
+            <div class="rounded-lg flex items-center content-center justify-center <%= stat[:with_issue] ? 'bg-fuchsia-500' : 'bg-stone-200' %> shadow-lg p-4">
               <div class="font-mono text-white text-sm font-bold leading-6">
                 <div class="grid grid-cols-1 gap-2 content-center w-full rounded-lg bg-stripes-sky text-center">
                   <div class="indicator">

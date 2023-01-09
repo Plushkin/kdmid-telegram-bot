@@ -35,7 +35,7 @@ services:
     restart: always
     command: bundle exec ruby web.rb
     ports:
-      - "3000:3000"
+      - "3004:3000"
     depends_on:
       - db
 
