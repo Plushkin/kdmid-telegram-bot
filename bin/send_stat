@@ -13,8 +13,7 @@ message << "\nUsers count: #{stat[:users_count]} Tasks count: #{stat[:tasks_coun
 stat[:subdomains].each do |subdomain, stat|
   with_problem = stat[:with_issue] ? '🔥' : ''
   message << "\n=== #{with_problem} subdomain: <b>#{subdomain}</b> count: <b>#{stat[:count]}</b> ===\n"
-  message << "created: <b>#{stat[:created_at]}</b>"
-  message << "updated: <b>#{stat[:updated_at]}</b> last success: <b>#{stat[:last_success_checked_at]}</b>"
+  message << "created: <b>#{stat[:created_at]}</b> updated: <b>#{stat[:updated_at]}</b> last success: <b>#{stat[:last_success_checked_at]}</b>\n"
   message << "success: <b>#{stat[:success_checks_count]}</b> failed: <b>#{stat[:failed_checks_count]}</b>"
 end
 

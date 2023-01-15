@@ -11,7 +11,7 @@ stat[:subdomains].each do |subdomain, stat|
   next unless stat[:with_issue]
 
   message = ''
-  message << "\n=== #{with_problem} subdomain: <b>#{subdomain}</b> count: <b>#{stat[:count]}</b> ===\n"
+  message << "\n=== #{stat[:with_issue]} subdomain: <b>#{subdomain}</b> count: <b>#{stat[:count]}</b> ===\n"
   message << "created: <b>#{stat[:created_at]}</b>"
   message << "updated: <b>#{stat[:updated_at]}</b> last success: <b>#{stat[:last_success_checked_at]}</b>"
   message << "success: <b>#{stat[:success_checks_count]}</b> failed: <b>#{stat[:failed_checks_count]}</b>"
