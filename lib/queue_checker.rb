@@ -100,6 +100,9 @@ class QueueChecker
       return
     end
 
+    pass_ddgcaptcha
+    pass_hcaptcha
+
     save_page
 
     mark_task_as_success
@@ -221,36 +224,41 @@ class QueueChecker
   end
 
   def pass_hcaptcha
+    attempt = 1
     sleep 5
 
-    return unless browser.div(id: 'h-captcha').exists?
+    while browser.div(id: 'h-captcha').exists? && attempt <= PASS_CAPTCHA_ATTEMPTS_LIMIT
+      log "attempt: [#{attempt}] let's pass hcaptcha..."
+      sitekey = browser.div(id: 'h-captcha').attribute_value('data-sitekey')
+      log "sitekey: #{sitekey} url: #{browser.url}"
 
-    sitekey = browser.div(id: 'h-captcha').attribute_value('data-sitekey')
-    log "sitekey: #{sitekey} url: #{browser.url}"
+      captcha = client.decode_hcaptcha!(sitekey: sitekey, pageurl: browser.url)
+      captcha_response = captcha.text
+      log "captcha_response: #{captcha_response}"
 
-    captcha = client.decode_hcaptcha!(sitekey: sitekey, pageurl: browser.url)
-    captcha_response = captcha.text
-    log "captcha_response: #{captcha_response}"
-
-    3.times do |i|
-      log "attempt: #{i}"
-      sleep 2
-      ['h-captcha-response', 'g-recaptcha-response'].each do |el_name|
-        browser.execute_script(
-          "document.getElementsByName('#{el_name}')[0].style = '';
+      3.times do |i|
+        log "attempt: #{i}"
+        sleep 2
+        ['h-captcha-response', 'g-recaptcha-response'].each do |el_name|
+          browser.execute_script(
+            "document.getElementsByName('#{el_name}')[0].style = '';
            document.getElementsByName('#{el_name}')[0].innerHTML = '#{captcha_response.strip}';
            document.querySelector('iframe').setAttribute('data-hcaptcha-response', '#{captcha_response.strip}');"
-        )
+          )
+        end
+        sleep 3
+        browser.execute_script("cb();")
+        sleep 3
+        break unless browser.div(id: 'h-captcha').exists?
       end
-      sleep 3
-      browser.execute_script("cb();")
-      sleep 3
-      break unless browser.div(id: 'h-captcha').exists?
-    end
 
-    if browser.alert.exists?
-      browser.alert.ok
-      log 'alert found'
+      if browser.alert.exists?
+        browser.alert.ok
+        log 'alert found'
+      end
+
+      attempt += 1
+      sleep 15
     end
   end
 
@@ -348,6 +356,7 @@ class QueueChecker
   end
 
   def save_page(file_prefix = '')
+    browser.alert.ok if browser.alert.exists?
     browser.screenshot.save screenshot_path(file_prefix)
     File.open("/files/pages/#{file_prefix}#{task.id}-#{current_time}.html", 'w') { |f| f.write browser.html }
   end
