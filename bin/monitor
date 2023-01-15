@@ -7,21 +7,17 @@ return unless admin_chat_id
 
 stat = Services::Stat.call.result
 
-message = ''
-message << "\nUsers count: #{stat[:users_count]} Tasks count: #{stat[:tasks_count]}\n"
-
 stat[:subdomains].each do |subdomain, stat|
-  with_problem = stat[:with_issue] ? '🔥' : ''
+  next unless stat[:with_issue]
+
+  message = ''
   message << "\n=== #{with_problem} subdomain: <b>#{subdomain}</b> count: <b>#{stat[:count]}</b> ===\n"
   message << "created: <b>#{stat[:created_at]}</b>"
   message << "updated: <b>#{stat[:updated_at]}</b> last success: <b>#{stat[:last_success_checked_at]}</b>"
   message << "success: <b>#{stat[:success_checks_count]}</b> failed: <b>#{stat[:failed_checks_count]}</b>"
-end
 
-return if message.empty?
-
-$logger.info 'Sending stat...'
-
-Telegram::Bot::Client.run($config.get_token, logger: $logger) do |bot|
-  MessageSender.new(bot: bot, chat_id: admin_chat_id, username: 'admin', text: "<b>STAT</b>\n#{message}").send
+  Telegram::Bot::Client.run($config.get_token, logger: $logger) do |bot|
+    MessageSender.new(bot: bot, chat_id: admin_chat_id, username: 'admin', text: "<b>MONITOR</b>\n#{message}").send
+  end
+  break
 end

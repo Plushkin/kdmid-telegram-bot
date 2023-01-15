@@ -82,6 +82,13 @@
     minute: "0"
     job: "cd {{ app_path }}; docker-compose run --rm bot bin/send_stat >> send_stat.log 2>&1"
 
+- name: Add monitoring to crontab
+  become_user: "{{ app_user }}"
+  cron:
+    name: "Monitor"
+    minute: "0"
+    job: "cd {{ app_path }}; docker-compose run --rm bot bin/monitor >> monitor.log 2>&1"
+
 # - name: Restart firefox
 #   become_user: "{{ app_user }}"
 #   shell:
