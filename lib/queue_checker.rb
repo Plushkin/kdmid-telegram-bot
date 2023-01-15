@@ -92,6 +92,7 @@ class QueueChecker
     pass_ddgcaptcha
 
     return if task_invalid?
+    return if already_have_appointment?
 
     click_make_appointment_button
 
@@ -178,6 +179,16 @@ class QueueChecker
 
     log 'task invalid'
     task.cancel!
+    browser.close
+    true
+  end
+
+  def already_have_appointment?
+    have_appointment = browser.text.include?(/Вы записаны \d+/)
+    return false unless have_appointment
+
+    log 'already_have_appointment'
+    # task.stop!
     browser.close
     true
   end
