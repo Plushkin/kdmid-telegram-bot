@@ -184,11 +184,11 @@ class QueueChecker
   end
 
   def already_have_appointment?
-    have_appointment = browser.text.include?(/Вы записаны \d+/)
+    have_appointment = browser.text.match(/Вы записаны \d+/)
     return false unless have_appointment
 
     log 'already_have_appointment'
-    # task.stop!
+    task.stop!
     browser.close
     true
   end
