@@ -13,6 +13,8 @@ gem 'selenium-webdriver', '4.7.1'
 gem 'watir', '7.2.1'
 gem 'watir-get-image-content'
 gem 'two_captcha'
+gem 'mini_magick'
+gem 'image_processing', '~> 1.0'
 
 gem 'sinatra'
 gem 'sinatra-contrib'

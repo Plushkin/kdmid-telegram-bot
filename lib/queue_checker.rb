@@ -1,6 +1,8 @@
 require 'two_captcha'
 require 'watir'
 require 'watir-get-image-content'
+require 'mini_magick'
+require 'image_processing'
 
 class QueueChecker
   attr_reader :browser, :client, :current_time, :task, :user
@@ -342,6 +344,15 @@ class QueueChecker
     log 'save captcha image to file...'
     image_filepath = "/files/captches/#{task.id}-#{current_time}.png"
     File.write(image_filepath, captcha_image.to_png)
+
+    file = File.open(image_filepath)
+    img = MiniMagick::Image.open(file)
+    # crop large captcha
+    if img.width == 600 && img.height == 200
+      processed = ImageProcessing::MiniMagick.source(file).crop(200, 0, 200, 200).call
+      image_filepath = "/files/captches/#{task.id}-#{current_time}-cropped.png"
+      FileUtils.cp(processed.path, image_filepath)
+    end
 
     log 'decode captcha...'
     captcha = client.decode!(path: image_filepath)
