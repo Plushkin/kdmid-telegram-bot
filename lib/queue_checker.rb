@@ -166,6 +166,7 @@ class QueueChecker
       'Извините, но в настоящий момент',
       'Свободное время в системе записи отсутствует',
       'Для проверки наличия свободного времени',
+      'нет свободного времени',
       'Bad Gateway'
     ]
     failure_texts.any? { |text| browser.text.include?(text) }
@@ -349,6 +350,7 @@ class QueueChecker
     img = MiniMagick::Image.open(file)
     # crop large captcha
     if img.width == 600 && img.height == 200
+      log 'crop image...'
       processed = ImageProcessing::MiniMagick.source(file).crop(200, 0, 200, 200).call
       image_filepath = "/files/captches/#{task.id}-#{current_time}-cropped.png"
       FileUtils.cp(processed.path, image_filepath)
