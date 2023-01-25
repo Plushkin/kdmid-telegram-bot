@@ -4,4 +4,4 @@ app_env: production
 
 app_repo_url: https://github.com/accessd/kdmid-telegram-bot.git
 
-max_firefox_sessions: 5
+max_firefox_sessions: 3
